@@ -67,7 +67,7 @@ const MovieList = ({ searchText }) => {
         </div>
       )}
 
-      <h1 className='text-left font-bold mb-4'>All Movies</h1>
+      <h1 className='text-left font-bold mb-4 text-white'>All Movies</h1>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
         {movies.map((movie, index) => (
           <MovieCard key={movie.id} movie={movie} hallNumber={index} />
