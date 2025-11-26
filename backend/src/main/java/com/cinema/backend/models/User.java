@@ -1,5 +1,6 @@
 package com.cinema.backend.models;
 
+import com.cinema.backend.models.Role;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -16,6 +17,8 @@ public class User {
     private String surname;
     private String email;
     private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Transient
     private String loginEmail;
@@ -32,6 +35,16 @@ public class User {
         this.surname = surname;
         this.email = email;
         this.password = password;
+        this.role = Role.USER; // DEFAULT
+    }
+
+    public User(Long id, String name, String surname, String email, String password, Role role) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.password = password;
+        this.role = role;
     }
 
     public User(String username, String encodedPassword) {
@@ -93,6 +106,14 @@ public class User {
         this.loginPassword = loginPassword;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -101,6 +122,7 @@ public class User {
                 ", surname='" + surname + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
                 '}';
     }
 
@@ -109,13 +131,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(surname, user.surname) && Objects.equals(email, user.email) && Objects.equals(password, user.password);
+        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(surname, user.surname) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(role, user.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, surname, email, password);
+        return Objects.hash(id, name, surname, email, password,role);
     }
-
-
 }
