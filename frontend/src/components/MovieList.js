@@ -11,6 +11,7 @@ const MovieList = ({ searchText }) => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [genreIds, setGenreIds] = useState([]);
+  const [loading, setLoading] = useState(false);
   const userLoggedIn = isLoggedIn();
 
   const ACCESS_TOKEN = process.env.REACT_APP_ACCESS_TOKEN || '';
@@ -18,6 +19,7 @@ const MovieList = ({ searchText }) => {
   useEffect(() => {
     const fetchMoviesBySearch = async () => {
       if (searchText) {
+        setLoading(true);
         const response = await FetchMoviesBySearch(
           ACCESS_TOKEN,
           page,
@@ -28,17 +30,20 @@ const MovieList = ({ searchText }) => {
           setMovies(filteredMovies);
           setTotalPages(totalPages);
         }
+        setLoading(false);
       }
     };
 
     const fetchMoviesByGenre = async () => {
       if (!searchText) {
+        setLoading(true);
         const response = await FetchMoviesByGenre(ACCESS_TOKEN, page, genreIds);
         if (response) {
           const { filteredMovies, totalPages } = response;
           setMovies(filteredMovies);
           setTotalPages(totalPages);
         }
+        setLoading(false);
       }
     };
 
@@ -49,50 +54,95 @@ const MovieList = ({ searchText }) => {
   const handleNextPage = () => {
     if (page < totalPages) {
       setPage(page + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handlePrevPage = () => {
     if (page > 1) {
       setPage(page - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   return (
-    <div className='container mx-auto px-4 py-4'>
-      <Genres setGenreIds={setGenreIds} />
+    <div className='container mx-auto px-4 py-8'>
+      <div className='mb-8'>
+        <Genres setGenreIds={setGenreIds} />
+      </div>
+
       {userLoggedIn && (
-        <div>
+        <div className='mb-12'>
           <RecommendedMovies />
         </div>
       )}
 
-      <h1 className='text-left font-bold mb-4 text-white'>All Movies</h1>
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-        {movies.map((movie, index) => (
-          <MovieCard key={movie.id} movie={movie} hallNumber={index} />
-        ))}
+      <div className='mb-6'>
+        <h2 className='text-2xl md:text-3xl font-bold text-white mb-2'>
+          {searchText ? `Search Results for "${searchText}"` : 'All Movies'}
+        </h2>
+        <div className='h-1 w-20 bg-gradient-to-r from-red-600 to-red-800 rounded'></div>
       </div>
-      <div className='flex justify-center mt-4'>
-        <button
-          onClick={handlePrevPage}
-          className={`bg-red-500 hover:bg-red-700 text-white rounded px-3 py-1 text-sm font-semibold mx-2 my-2 cursor-pointer ${
-            page === 1 ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          disabled={page === 1}
-        >
-          Previous
-        </button>
-        <button
-          onClick={handleNextPage}
-          className={`bg-red-500 hover:bg-red-700 text-white rounded px-3 py-1 text-sm font-semibold mx-2 my-2 cursor-pointer ${
-            page === totalPages ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          disabled={page === totalPages}
-        >
-          Next
-        </button>
-      </div>
+
+      {loading ? (
+        <div className='flex justify-center items-center min-h-[400px]'>
+          <div className='text-center'>
+            <div className='inline-block w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4'></div>
+            <p className='text-white text-lg'>Loading movies...</p>
+          </div>
+        </div>
+      ) : movies.length === 0 ? (
+        <div className='flex flex-col justify-center items-center min-h-[400px] text-center'>
+          <div className='text-6xl mb-4'>🎬</div>
+          <h3 className='text-2xl font-bold text-white mb-2'>No movies found</h3>
+          <p className='text-gray-400'>Try adjusting your search or filters</p>
+        </div>
+      ) : (
+        <>
+          <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 mb-8'>
+            {movies.map((movie, index) => (
+              <div
+                key={movie.id}
+                className='transform transition-all duration-300 hover:scale-105'
+              >
+                <MovieCard movie={movie} hallNumber={index} />
+              </div>
+            ))}
+          </div>
+
+          <div className='flex flex-col sm:flex-row justify-center items-center gap-4 mt-12'>
+            <button
+              onClick={handlePrevPage}
+              className={`px-8 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${
+                page === 1
+                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-500 hover:to-red-600 hover:shadow-lg hover:shadow-red-500/50 transform hover:-translate-y-0.5'
+              }`}
+              disabled={page === 1}
+            >
+              ← Previous
+            </button>
+
+            <div className='flex items-center gap-2'>
+              <span className='text-white font-medium'>
+                Page {page} of {totalPages}
+              </span>
+            </div>
+
+            <button
+              onClick={handleNextPage}
+              className={`px-8 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${
+                page === totalPages
+                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-500 hover:to-red-600 hover:shadow-lg hover:shadow-red-500/50 transform hover:-translate-y-0.5'
+              }`}
+              disabled={page === totalPages}
+            >
+              Next →
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -100,7 +100,7 @@ const RecommendedMovies = () => {
         recommendedMovies.movieGenres &&
         recommendedMovies.movieGenres.length > 0 && (
           <div className='container mx-auto pt-4'>
-            <h1 className='text-left font-bold pb-4'>Recommended Movies</h1>
+            <h1 className='text-left font-bold pb-4 text-white'>Recommended Movies</h1>
             <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
               {displayedMovies.map((movie, index) => (
                 <RecommendedMovieCard
