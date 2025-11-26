@@ -24,7 +24,7 @@ const MovieCard = ({ movie }) => {
         <div className='absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100'>
           <div className='absolute bottom-0 left-0 right-0 p-4'>
             <button className='w-full px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full font-semibold text-sm hover:from-red-500 hover:to-red-600 transition-all duration-300 transform hover:scale-105'>
-              Book Now
+              See Details
             </button>
           </div>
         </div>

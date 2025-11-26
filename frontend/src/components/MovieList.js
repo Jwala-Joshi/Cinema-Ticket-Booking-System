@@ -78,10 +78,15 @@ const MovieList = ({ searchText }) => {
       )}
 
       <div className='mb-6'>
-        <h2 className='text-2xl md:text-3xl font-bold text-white mb-2'>
-          {searchText ? `Search Results for "${searchText}"` : 'All Movies'}
+        <h2 className='text-2xl text-left md:text-3xl font-bold text-white mb-2'>
+          {!searchText ? 'All Movies': ''}
         </h2>
-        <div className='h-1 w-20 bg-gradient-to-r from-red-600 to-red-800 rounded'></div>
+        {searchText && (
+          <h2 className='text-2xl md:text-3xl font-bold text-white mb-2 text-center w-full'>
+            {`Search Results for "${searchText}"`}
+          </h2>
+        )}
+        <div className='h-1 w-20 bg-gradient-to-r from-red-600 to-red-700 rounded'></div>
       </div>
 
       {loading ? (
@@ -105,7 +110,7 @@ const MovieList = ({ searchText }) => {
                 key={movie.id}
                 className='transform transition-all duration-300 hover:scale-105'
               >
-                <MovieCard movie={movie} hallNumber={index} />
+                <MovieCard movie={movie} />
               </div>
             ))}
           </div>

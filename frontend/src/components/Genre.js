@@ -54,13 +54,13 @@ const Genres = ({ setGenreIds }) => {
   };
 
   return (
-    <div className='flex flex-wrap m-4 justify-between'>
+    <div className='flex flex-wrap justify-center m-4'>
       {genres.map((genre, index) => (
         <span
           key={index}
           className={`inline-block ${
-            clickedGenres[index] ? 'bg-red-700' : 'bg-red-500 hover:bg-red-700'
-          } text-white rounded px-3 py-1 text-sm font-semibold mx-1 my-1 cursor-pointer`}
+            clickedGenres[index] ? 'bg-red-800' : 'bg-red-600 hover:bg-red-800'
+          } text-white rounded-full px-4 py-1.5 text-sm font-semibold mx-1 my-1 cursor-pointer`}
           onClick={() => handleGenreClick(index)}
         >
           {genreEmojis[genre.id]} {genre.name}

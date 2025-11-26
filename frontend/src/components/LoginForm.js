@@ -90,7 +90,7 @@ function LoginForm({ onClose, onLogin }) {
             type='submit'
             className='bg-red-500 hover:bg-red-700 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
           >
-            Login
+             Login
           </button>
         </div>
       </form>

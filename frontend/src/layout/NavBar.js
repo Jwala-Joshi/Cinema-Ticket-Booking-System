@@ -102,8 +102,10 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
                 {user ? (
                   <>
                     <div className='flex items-center gap-3 text-white pb-2'>
-                      <div className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 font-bold'>
-                        {user.firstName?.[0]?.toUpperCase() || 'U'}
+                      <div 
+                        className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 font-bold'
+                        >
+                        {user.firstName?.[0]?.toUpperCase() || ''}
                       </div>
                       <span className='font-medium'>{user.firstName || 'User'}</span>
                     </div>
