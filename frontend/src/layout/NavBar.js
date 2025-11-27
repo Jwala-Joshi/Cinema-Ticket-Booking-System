@@ -52,10 +52,10 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
               {user ? (
                 <div className='flex items-center gap-3'>
                   <div className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 text-white font-bold border-2 border-transparent hover:border-red-500 transition-all duration-300 cursor-pointer'>
-                    {user.firstName?.[0]?.toUpperCase() || 'U'}
+                    {user.userName?.[0]?.toUpperCase() || 'U'}
                   </div>
                   <span className='text-white font-medium'>
-                    {user.firstName || 'User'}
+                    {user.userName || 'User'}
                   </span>
                   <button
                     className='px-6 py-2 bg-transparent text-white border-2 border-white/30 rounded-full font-semibold hover:border-red-600 hover:text-red-600 hover:bg-red-600/10 transition-all duration-300'
@@ -105,9 +105,9 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
                       <div 
                         className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 font-bold'
                         >
-                        {user.firstName?.[0]?.toUpperCase() || ''}
+                        {user.userName?.[0]?.toUpperCase() || ''}
                       </div>
-                      <span className='font-medium'>{user.firstName || 'User'}</span>
+                      <span className='font-medium'>{user.userName || 'User'}</span>
                     </div>
                     <button
                       className='w-full px-4 py-3 bg-transparent text-white border-2 border-white/30 rounded-lg font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300'
