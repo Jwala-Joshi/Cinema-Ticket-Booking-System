@@ -7,21 +7,28 @@ const RecommendedSessionInfo = ({ movieSessions, movieId }) => {
   };
 
   return (
-    <Link to={`/movie/${movieId}`} className='container'>
-      <ul>
+    <div className='mt-2'>
+      <div className='space-y-1'>
         {movieSessions.map((session, index) => (
-          <li key={index}>
-            <button
-              onClick={() => handleSessionSelect(session)}
-              className='bg-red-500 w-full border rounded-lg text-left text-white text-[8px] font-semibold p-1 my-1 flex space-x-2'
-            >
-              <span>{session.time}</span>
-              <span className='border rounded px-1'>{session.language}</span>
+          <Link
+            key={index}
+            to={`/movie/${movieId}`}
+            onClick={() => handleSessionSelect(session)}
+            className='block w-full'
+          >
+            <button className='w-full bg-gradient-to-r from-red-600/80 to-red-700/80 hover:from-red-600 hover:to-red-700 border border-red-500/30 rounded-lg text-left text-white text-xs font-semibold px-2 py-1.5 transition-all duration-300 flex items-center justify-between gap-2'>
+              <span className='flex items-center gap-1'>
+                <span>🕐</span>
+                <span>{session.time}</span>
+              </span>
+              <span className='bg-black/20 border border-white/20 rounded px-1.5 py-0.5 text-[10px]'>
+                {session.language}
+              </span>
             </button>
-          </li>
+          </Link>
         ))}
-      </ul>
-    </Link>
+      </div>
+    </div>
   );
 };
 

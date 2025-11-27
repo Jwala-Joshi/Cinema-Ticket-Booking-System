@@ -8,6 +8,7 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -22,6 +23,15 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
     logout();
     onLogout();
   };
+
+  const handleMenuClick = () => {
+    setIsMenuOpen(prev => !prev);
+  }
+
+  const handleOptionClick = (option) => {
+    console.log(`${option} clicked`);
+    setIsMenuOpen(false);
+  }
 
   return (
     <>
@@ -48,15 +58,43 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
               <Search onSearch={onSearch} />
             </div>
 
-            <div className='hidden lg:flex items-center gap-3'>
+            <div className='hidden lg:flex items-center gap-3 relative'>
               {user ? (
                 <div className='flex items-center gap-3'>
-                  <div className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 text-white font-bold border-2 border-transparent hover:border-red-500 transition-all duration-300 cursor-pointer'>
+                  <div className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 text-white font-bold border-2 border-transparent hover:border-red-500 transition-all duration-300 cursor-pointer'
+                  onClick={handleMenuClick}
+                  >
                     {user.userName?.[0]?.toUpperCase() || 'U'}
                   </div>
                   <span className='text-white font-medium'>
                     {user.userName || 'User'}
                   </span>
+
+                  {isMenuOpen && (
+                    <div className='absolute top-full right-0 mt-2 w-48 bg-gray-900 border-2 border-gray-700 rounded-lg shadow-2xl z-50'>
+                      <ul className='list-none p-2'>
+                        <li 
+                          className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200' 
+                          onClick={() => handleOptionClick('Profile')}
+                        >
+                        👤 Profile
+                        </li>
+                        <li 
+                          className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200' 
+                          onClick={() => handleOptionClick('Bookings')}
+                        >
+                        🎫 My Bookings
+                        </li>
+                        <li 
+                          className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200' 
+                          onClick={() => handleOptionClick('Settings')}
+                        >
+                        ⚙️ Settings
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+
                   <button
                     className='px-6 py-2 bg-transparent text-white border-2 border-white/30 rounded-full font-semibold hover:border-red-600 hover:text-red-600 hover:bg-red-600/10 transition-all duration-300'
                     onClick={handleLogout}
