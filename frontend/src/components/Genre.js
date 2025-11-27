@@ -5,15 +5,18 @@ import RemoveUnwantedGenres from '../utils/removeNonCinemaGenres';
 const Genres = ({ setGenreIds }) => {
   const [genres, setGenres] = useState([]);
   const [clickedGenres, setClickedGenres] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const ACCESS_TOKEN = process.env.REACT_APP_ACCESS_TOKEN || '';
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const fetchedGenres = await FetchGenres(ACCESS_TOKEN);
       const filteredGenres = RemoveUnwantedGenres(fetchedGenres);
       setGenres(filteredGenres);
       setClickedGenres(Array(filteredGenres.length).fill(false));
+      setLoading(false);
     };
 
     fetchData();
@@ -53,19 +56,32 @@ const Genres = ({ setGenreIds }) => {
     80: '🔫', // Crime
   };
 
+  if (loading) {
+    return (
+      <div className='flex justify-center items-center py-8'>
+        <div className='inline-block w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin'></div>
+      </div>
+    );
+  }
+
   return (
-    <div className='flex flex-wrap justify-center m-4'>
-      {genres.map((genre, index) => (
-        <span
-          key={index}
-          className={`inline-block ${
-            clickedGenres[index] ? 'bg-red-800' : 'bg-red-600 hover:bg-red-800'
-          } text-white rounded-full px-4 py-1.5 text-sm font-semibold mx-1 my-1 cursor-pointer`}
-          onClick={() => handleGenreClick(index)}
-        >
-          {genreEmojis[genre.id]} {genre.name}
-        </span>
-      ))}
+    <div className='mb-6'>
+      <div className='flex flex-wrap justify-center gap-2 md:gap-3'>
+        {genres.map((genre, index) => (
+          <button
+            key={genre.id}
+            onClick={() => handleGenreClick(index)}
+            className={`inline-flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-semibold text-sm transition-all duration-300 transform hover:scale-105 ${
+              clickedGenres[index]
+                ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-500/50 border-2 border-red-500'
+                : 'bg-gray-800/50 text-gray-300 border-2 border-gray-700 hover:border-red-600 hover:bg-red-600/10 hover:text-white'
+            }`}
+          >
+            <span className='text-base'>{genreEmojis[genre.id]}</span>
+            <span>{genre.name}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
