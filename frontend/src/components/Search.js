@@ -14,9 +14,13 @@ const Search = ({ onSearch }) => {
     onSearch('');
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+
   return (
     <div className='relative w-full'>
-      <div className='relative'>
+      <form onSubmit={handleSubmit} className='relative'>
         <input
           type='text'
           placeholder='Search movies...'
@@ -44,6 +48,7 @@ const Search = ({ onSearch }) => {
 
         {search && (
           <button
+            type='button'
             onClick={handleClear}
             className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors duration-300'
             aria-label='Clear search'
@@ -64,7 +69,7 @@ const Search = ({ onSearch }) => {
             </svg>
           </button>
         )}
-      </div>
+      </form>
     </div>
   );
 };

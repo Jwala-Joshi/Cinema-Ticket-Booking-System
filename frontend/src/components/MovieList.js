@@ -128,11 +128,11 @@ const MovieList = ({ searchText }) => {
               ← Previous
             </button>
 
-            <div className='flex items-center gap-2'>
+            {/* <div className='flex items-center gap-2'>
               <span className='text-white font-medium'>
                 Page {page} of {totalPages}
               </span>
-            </div>
+            </div> */}
 
             <button
               onClick={handleNextPage}

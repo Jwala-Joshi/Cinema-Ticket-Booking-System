@@ -1,4 +1,5 @@
 import FilterValidMovies from '../utils/filterValidMovies';
+
 async function FetchMoviesBySearch(ACCESS_TOKEN, page, searchText) {
   const url = `https://api.themoviedb.org/3/search/multi?api_key=${ACCESS_TOKEN}&language=en-US&query=${encodeURIComponent(
     searchText,
@@ -18,7 +19,11 @@ async function FetchMoviesBySearch(ACCESS_TOKEN, page, searchText) {
       (movie) => movie.backdrop_path !== null,
     );
 
-    return { filteredMovies, totalPages: data.total_pages };
+    return { 
+      filteredMovies, 
+      totalPages: data.total_pages,
+      totalResults: data.total_results
+    };
   } catch (error) {
     console.error('Error fetching movies by search:', error);
     return null;

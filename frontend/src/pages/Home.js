@@ -1,10 +1,16 @@
 import React from 'react';
-import MovieList from '../components/MovieList';
+import { isLoggedIn } from '../utils/Auth';
+import NowShowing from '../components/NowShowing';
+import UpcomingMovies from '../components/UpcomingMovies';
+import SearchResults from '../components/SearchResults';
+import RecommendedMovies from '../components/RecommendedMovies';
 
 function Home({ searchText }) {
+  const userLoggedIn = isLoggedIn();
+
   return (
     <div className='min-h-screen bg-gradient-to-b from-black via-gray-900 to-black'>
-      
+    
       <div className='relative overflow-hidden'>
         <div className='absolute inset-0 bg-gradient-to-b from-red-900/20 to-transparent'></div>
         <div className='container mx-auto px-4 py-12 md:py-20 text-center relative z-10'>
@@ -17,9 +23,27 @@ function Home({ searchText }) {
         </div>
       </div>
 
-      <div className='animate-fadeIn'>
-        <MovieList searchText={searchText} />
-      </div>
+      {searchText ? (
+        <div className='animate-fadeIn'>
+          <SearchResults searchText={searchText} />
+        </div>
+      ) : (
+        <div className='animate-fadeIn'>
+          {userLoggedIn && (
+            <div className='mb-12'>
+              <RecommendedMovies />
+            </div>
+          )}
+
+          <div className='mb-12'>
+            <NowShowing />
+          </div>
+
+          <div className='mb-12'>
+            <UpcomingMovies />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
