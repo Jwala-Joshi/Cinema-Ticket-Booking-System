@@ -35,18 +35,16 @@ const UpcomingMovies = () => {
 
   return (
     <div className='container mx-auto px-4 py-8'>
-      {/* Section Header */}
       <div className='mb-6'>
         <h2 className='text-2xl text-left md:text-3xl font-bold text-white mb-2'>
           🔜 Coming Soon
         </h2>
-        <p className='text-gray-400 text-sm mb-3'>
+        {/* <p className='text-gray-400 text-sm mb-3'>
           Upcoming releases in our cinema
-        </p>
+        </p> */}
         <div className='h-1 w-20 bg-gradient-to-r from-red-600 to-red-800 rounded'></div>
       </div>
 
-      {/* Loading State */}
       {loading ? (
         <div className='flex justify-center items-center min-h-[400px]'>
           <div className='text-center'>
@@ -55,14 +53,12 @@ const UpcomingMovies = () => {
           </div>
         </div>
       ) : movies.length === 0 ? (
-        /* Empty State */
         <div className='flex flex-col justify-center items-center min-h-[400px] text-center'>
           <div className='text-6xl mb-4'>📅</div>
           <h3 className='text-2xl font-bold text-white mb-2'>No upcoming movies</h3>
           <p className='text-gray-400'>New releases will be announced soon!</p>
         </div>
       ) : (
-        /* Movie Grid */
         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6'>
           {movies.map((movie) => (
             <div

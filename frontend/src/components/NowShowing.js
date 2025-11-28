@@ -39,9 +39,9 @@ const NowShowing = () => {
         <h2 className='text-2xl text-left md:text-3xl font-bold text-white mb-2'>
           🎬 Now Showing
         </h2>
-        <p className='text-gray-400 text-sm mb-3'>
+        {/* <p className='text-gray-400 text-sm mb-3'>
           Movies currently playing in our cinema
-        </p>
+        </p> */}
         <div className='h-1 w-20 bg-gradient-to-r from-red-600 to-red-800 rounded'></div>
       </div>
 
