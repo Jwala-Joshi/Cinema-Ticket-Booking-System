@@ -10,8 +10,8 @@ import java.util.Objects;
 public class User {
 
     @Id
-    @Column
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String surname;

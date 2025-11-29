@@ -9,8 +9,8 @@ import java.util.Objects;
 public class CinemaMovie {
     
     @Id
-    @Column
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @Column(nullable = false)

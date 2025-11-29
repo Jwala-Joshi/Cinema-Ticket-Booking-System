@@ -11,8 +11,8 @@ import java.util.Objects;
 public class Order {
 
     @Id
-    @Column
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "order_id", nullable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
     @Temporal(TemporalType.TIMESTAMP)
