@@ -5,6 +5,10 @@ import Footer from './layout/Footer';
 import NavBar from './layout/NavBar';
 import Home from './pages/Home';
 import MovieDetails from './pages/MovieDetails';
+import Profile from './pages/Profile';
+import MyBookings from './pages/MyBookings';
+import Settings from './pages/Settings';
+import AddMovie from './pages/AddMovie';
 import { isLoggedIn, login, logout } from './utils/Auth';
 
 function App() {
@@ -47,6 +51,10 @@ function App() {
             element={<Home searchText={searchText} user={user} />}
           />
           <Route path='/movie/:id' element={<MovieDetails />} />
+          <Route path='/profile' element={<Profile />} />
+          <Route path='/my-bookings' element={<MyBookings />} />
+          <Route path='/settings' element={<Settings />} />
+          <Route path='/add-movie' element={<AddMovie />} />
         </Routes>
         <Footer />
       </BrowserRouter>

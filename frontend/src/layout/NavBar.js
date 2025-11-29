@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
 import RegistrationForm from '../components/RegistrationForm';
 import Search from '../components/Search';
@@ -10,6 +11,8 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,20 +21,46 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const handleLogout = () => {
     logout();
     onLogout();
+    setIsMenuOpen(false);
   };
 
   const handleMenuClick = () => {
     setIsMenuOpen(prev => !prev);
-  }
+  };
 
   const handleOptionClick = (option) => {
-    console.log(`${option} clicked`);
     setIsMenuOpen(false);
-  }
+    
+    if (option === 'Profile') {
+      navigate('/profile');
+    } else if (option === 'Bookings') {
+      navigate('/my-bookings');
+    } else if (option === 'Settings') {
+      navigate('/settings');
+    } else if (option === 'AddMovie') {
+      navigate('/add-movie');
+    }
+  };
 
   return (
     <>
@@ -58,11 +87,12 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
               <Search onSearch={onSearch} />
             </div>
 
-            <div className='hidden lg:flex items-center gap-3 relative'>
+            <div className='hidden lg:flex items-center gap-3'>
               {user ? (
-                <div className='flex items-center gap-3'>
-                  <div className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 text-white font-bold border-2 border-transparent hover:border-red-500 transition-all duration-300 cursor-pointer'
-                  onClick={handleMenuClick}
+                <div className='flex items-center gap-3 relative' ref={dropdownRef}>
+                  <div 
+                    className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 text-white font-bold border-2 border-transparent hover:border-red-500 transition-all duration-300 cursor-pointer'
+                    onClick={handleMenuClick}
                   >
                     {user.userName?.[0]?.toUpperCase() || 'U'}
                   </div>
@@ -71,36 +101,48 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
                   </span>
 
                   {isMenuOpen && (
-                    <div className='absolute top-full right-0 mt-2 w-48 bg-gray-900 border-2 border-gray-700 rounded-lg shadow-2xl z-50'>
+                    <div className='absolute top-full right-0 mt-2 w-56 bg-gray-900 border-2 border-gray-700 rounded-lg shadow-2xl z-50 overflow-hidden animate-fadeIn'>
                       <ul className='list-none p-2'>
                         <li 
-                          className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200' 
+                          className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200 flex items-center gap-3' 
                           onClick={() => handleOptionClick('Profile')}
                         >
-                        👤 Profile
+                          <span className='text-xl'>👤</span>
+                          <span>Profile</span>
                         </li>
                         <li 
-                          className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200' 
+                          className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200 flex items-center gap-3' 
                           onClick={() => handleOptionClick('Bookings')}
                         >
-                        🎫 My Bookings
+                          <span className='text-xl'>🎫</span>
+                          <span>My Bookings</span>
                         </li>
+                        {user.role === 'CINEMA_OWNER' && (
+                          <li 
+                            className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200 flex items-center gap-3 border-t border-gray-700' 
+                            onClick={() => handleOptionClick('AddMovie')}
+                          >
+                            <span className='text-xl'>➕</span>
+                            <span>Add Movie</span>
+                          </li>
+                        )}
                         <li 
-                          className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200' 
+                          className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200 flex items-center gap-3' 
                           onClick={() => handleOptionClick('Settings')}
                         >
-                        ⚙️ Settings
+                          <span className='text-xl'>⚙️</span>
+                          <span>Settings</span>
+                        </li>
+                        <li 
+                          className='p-3 hover:bg-red-900 cursor-pointer rounded text-white transition-colors duration-200 flex items-center gap-3 border-t border-gray-700' 
+                          onClick={handleLogout}
+                        >
+                          <span className='text-xl'>🚪</span>
+                          <span>Logout</span>
                         </li>
                       </ul>
                     </div>
                   )}
-
-                  <button
-                    className='px-6 py-2 bg-transparent text-white border-2 border-white/30 rounded-full font-semibold hover:border-red-600 hover:text-red-600 hover:bg-red-600/10 transition-all duration-300'
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
                 </div>
               ) : (
                 <>
@@ -140,13 +182,54 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
                 {user ? (
                   <>
                     <div className='flex items-center gap-3 text-white pb-2'>
-                      <div 
-                        className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 font-bold'
-                        >
-                        {user.userName?.[0]?.toUpperCase() || ''}
+                      <div className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 font-bold'>
+                        {user.userName?.[0]?.toUpperCase() || 'U'}
                       </div>
                       <span className='font-medium'>{user.userName || 'User'}</span>
                     </div>
+                    
+                    <button
+                      className='w-full px-4 py-3 bg-transparent text-white border-2 border-white/30 rounded-lg font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300 text-left flex items-center gap-3'
+                      onClick={() => {
+                        handleOptionClick('Profile');
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      <span>👤</span> Profile
+                    </button>
+                    
+                    <button
+                      className='w-full px-4 py-3 bg-transparent text-white border-2 border-white/30 rounded-lg font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300 text-left flex items-center gap-3'
+                      onClick={() => {
+                        handleOptionClick('Bookings');
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      <span>🎫</span> My Bookings
+                    </button>
+
+                    {user.role === 'CINEMA_OWNER' && (
+                      <button
+                        className='w-full px-4 py-3 bg-transparent text-white border-2 border-white/30 rounded-lg font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300 text-left flex items-center gap-3'
+                        onClick={() => {
+                          handleOptionClick('AddMovie');
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <span>➕</span> Add Movie
+                      </button>
+                    )}
+                    
+                    <button
+                      className='w-full px-4 py-3 bg-transparent text-white border-2 border-white/30 rounded-lg font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300 text-left flex items-center gap-3'
+                      onClick={() => {
+                        handleOptionClick('Settings');
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      <span>⚙️</span> Settings
+                    </button>
+                    
                     <button
                       className='w-full px-4 py-3 bg-transparent text-white border-2 border-white/30 rounded-lg font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300'
                       onClick={handleLogout}
