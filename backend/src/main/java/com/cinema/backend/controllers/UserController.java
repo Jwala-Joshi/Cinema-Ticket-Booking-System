@@ -27,15 +27,15 @@ public class UserController {
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginResponseDTO("Invalid credentials", null, null));
+                    .body(new LoginResponseDTO("Invalid credentials", null, null,null));
         }
 
         if (userService.isPasswordMatch(loginRequest.getPassword(), user.getPassword())) {
-            LoginResponseDTO response = new LoginResponseDTO("Login successful", user.getName(), user.getId());
+            LoginResponseDTO response = new LoginResponseDTO("Login successful", user.getName(), user.getId(),user.getRole().toString());
             return ResponseEntity.ok().body(response);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginResponseDTO("Invalid credentials", null, null));
+                    .body(new LoginResponseDTO("Invalid credentials", null, null,null));
         }
     }
 }
