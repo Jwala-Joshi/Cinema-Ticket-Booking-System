@@ -5,11 +5,13 @@ public class LoginResponseDTO {
     private String message;
     private String userName;
     private Long userId;
+    private String role;
 
-    public LoginResponseDTO(String message, String userName, Long userId) {
+    public LoginResponseDTO(String message, String userName, Long userId,String role) {
         this.message = message;
         this.userName = userName;
         this.userId = userId;
+        this.role = role;
     }
 
     public String getMessage() {
@@ -34,5 +36,13 @@ public class LoginResponseDTO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role){
+        this.role = role;
     }
 }
