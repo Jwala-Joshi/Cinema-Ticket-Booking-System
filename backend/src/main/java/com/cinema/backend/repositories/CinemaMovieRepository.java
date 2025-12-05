@@ -3,6 +3,7 @@ package com.cinema.backend.repositories;
 import com.cinema.backend.models.CinemaMovie;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -13,13 +14,10 @@ public interface CinemaMovieRepository extends JpaRepository<CinemaMovie, Long> 
     
     List<CinemaMovie> findByStatus(String status);
     
-    @Query("SELECT m FROM CinemaMovie m WHERE m.status = 'NOW_SHOWING' " +
-           "AND m.showingStartDate <= :currentDate " +
-           "AND (m.showingEndDate IS NULL OR m.showingEndDate >= :currentDate)")
+    @Query("SELECT m FROM CinemaMovie m WHERE m.status = 'NOW_SHOWING'")
     List<CinemaMovie> findCurrentlyShowing(LocalDate currentDate);
     
-    @Query("SELECT m FROM CinemaMovie m WHERE m.status = 'UPCOMING' " +
-           "AND m.releaseDate > :currentDate ORDER BY m.releaseDate ASC")
+    @Query("SELECT m FROM CinemaMovie m WHERE m.status = 'UPCOMING' ORDER BY m.upcomingReleaseDate ASC")
     List<CinemaMovie> findUpcoming(LocalDate currentDate);
     
     boolean existsByTmdbId(Long tmdbId);

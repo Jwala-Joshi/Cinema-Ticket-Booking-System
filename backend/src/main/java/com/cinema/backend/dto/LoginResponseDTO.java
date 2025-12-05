@@ -4,14 +4,18 @@ public class LoginResponseDTO {
 
     private String message;
     private String userName;
+    private String surname;
     private Long userId;
     private String role;
+    private String email;
 
-    public LoginResponseDTO(String message, String userName, Long userId,String role) {
+    public LoginResponseDTO(String message, String userName,String surname, Long userId,String role,String email) {
         this.message = message;
         this.userName = userName;
+        this.surname = surname;
         this.userId = userId;
         this.role = role;
+        this.email = email;
     }
 
     public String getMessage() {
@@ -30,6 +34,14 @@ public class LoginResponseDTO {
         this.userName = userName;
     }
 
+    public String getSurname(){
+        return surname;
+    }
+
+    public void setSurname(String surname){
+        this.surname = surname;
+    }
+
     public Long getUserId() {
         return userId;
     }
@@ -44,5 +56,13 @@ public class LoginResponseDTO {
 
     public void setRole(String role){
         this.role = role;
+    }
+
+    public String getEmail(){
+        return email;
+    }
+
+    public void setEmail(String email){
+        this.email = email;
     }
 }
