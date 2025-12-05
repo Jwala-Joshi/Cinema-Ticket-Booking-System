@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import FetchMoviesByGenre from '../API/FetchMoviesByGenre';
 import FetchMoviesBySearch from '../API/FetchMoviesBySearch';
-import { isLoggedIn } from '../utils/Auth';
 import Genres from './Genre';
 import MovieCard from './MovieCard';
-import RecommendedMovies from './RecommendedMovies';
 
 const MovieList = ({ searchText }) => {
   const [movies, setMovies] = useState([]);
@@ -12,7 +10,6 @@ const MovieList = ({ searchText }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [genreIds, setGenreIds] = useState([]);
   const [loading, setLoading] = useState(false);
-  const userLoggedIn = isLoggedIn();
 
   const ACCESS_TOKEN = process.env.REACT_APP_ACCESS_TOKEN || '';
 
@@ -70,12 +67,6 @@ const MovieList = ({ searchText }) => {
       <div className='mb-8'>
         <Genres setGenreIds={setGenreIds} />
       </div>
-
-      {userLoggedIn && (
-        <div className='mb-12'>
-          <RecommendedMovies />
-        </div>
-      )}
 
       <div className='mb-6'>
         <h2 className='text-2xl text-left md:text-3xl font-bold text-white mb-2'>

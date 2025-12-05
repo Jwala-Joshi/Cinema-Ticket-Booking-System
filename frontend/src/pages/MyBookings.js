@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { isLoggedIn } from '../utils/Auth';
 import { useNavigate } from 'react-router-dom';
-import FormatDate from '../utils/formatDate';
 
 function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -32,7 +31,7 @@ function MyBookings() {
 
       if (response.ok) {
         const data = await response.json();
-        setBookings(data ? [data] : []);
+        setBookings(Array.isArray(data) ? data : (data ? [data] : []));
       } else {
         setBookings([]);
       }
@@ -90,6 +89,21 @@ function MyBookings() {
               >
                 <div className='flex flex-col md:flex-row gap-6'>
                   
+                  <div className='md:w-48 lg:w-56 flex-shrink-0'>
+                    <img
+                      src={
+                        booking.movieId
+                          ? `https://image.tmdb.org/t/p/w300${booking.movieId}`
+                          : 'https://via.placeholder.com/300x450?text=No+Image'
+                      }
+                      alt={booking.movieTitle}
+                      className='w-full h-64 md:h-full object-cover'
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/300x450?text=No+Image';
+                      }}
+                    />
+                  </div>
+
                   <div className='flex-1'>
                     <h3 className='text-2xl font-bold text-white mb-2'>
                       {booking.movieTitle}

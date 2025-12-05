@@ -7,7 +7,6 @@ function RegistrationForm({ onClose }) {
     name: '',
     surname: '',
     email: '',
-    phone: '',
     password: '',
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +50,6 @@ function RegistrationForm({ onClose }) {
           name: '',
           surname: '',
           email: '',
-          phone: '',
           password: '',
         });
         
@@ -118,7 +116,7 @@ function RegistrationForm({ onClose }) {
                 type='text'
                 id='surname'
                 name='surname'
-                placeholder='Doe'
+                placeholder='Cena'
                 value={formData.surname}
                 onChange={handleChange}
                 className='w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-600 focus:bg-gray-800 transition-all duration-300'
@@ -135,26 +133,11 @@ function RegistrationForm({ onClose }) {
               type='email'
               id='email'
               name='email'
-              placeholder='john.doe@example.com'
+              placeholder='john@example.com'
               value={formData.email}
               onChange={handleChange}
               className='w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-600 focus:bg-gray-800 transition-all duration-300'
               required
-            />
-          </div>
-
-          <div>
-            <label htmlFor='phone' className='block text-gray-300 text-sm font-medium mb-2'>
-              Phone Number (Optional)
-            </label>
-            <input
-              type='tel'
-              id='phone'
-              name='phone'
-              placeholder='+977 98XXXXXXXX'
-              value={formData.phone}
-              onChange={handleChange}
-              className='w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-600 focus:bg-gray-800 transition-all duration-300'
             />
           </div>
 
@@ -171,9 +154,9 @@ function RegistrationForm({ onClose }) {
               onChange={handleChange}
               className='w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-600 focus:bg-gray-800 transition-all duration-300'
               required
-              minLength={6}
+              minLength={8}
             />
-            <p className='text-gray-500 text-xs mt-1'>Minimum 6 characters</p>
+            <p className='text-gray-500 text-xs mt-1'>Minimum 8 characters</p>
           </div>
 
           <button

@@ -93,7 +93,7 @@ const SearchResults = ({ searchText }) => {
                 key={movie.id}
                 className='transform transition-all duration-300 hover:scale-105'
               >
-                <MovieCard movie={movie} />
+                <MovieCard movie={movie} showStatus = {true}/>
               </div>
             ))}
           </div>

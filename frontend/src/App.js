@@ -9,6 +9,8 @@ import Profile from './pages/Profile';
 import MyBookings from './pages/MyBookings';
 import Settings from './pages/Settings';
 import AddMovie from './pages/AddMovie';
+import UserData from './pages/UserData';
+import UserBookings from './pages/UserBookings';
 import { isLoggedIn, login, logout } from './utils/Auth';
 
 function App() {
@@ -55,6 +57,8 @@ function App() {
           <Route path='/my-bookings' element={<MyBookings />} />
           <Route path='/settings' element={<Settings />} />
           <Route path='/add-movie' element={<AddMovie />} />
+          <Route path='/users' element={<UserData />} />
+          <Route path='/user-bookings/:userId' element={<UserBookings />} />
         </Routes>
         <Footer />
       </BrowserRouter>

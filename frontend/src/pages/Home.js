@@ -39,7 +39,7 @@ function Home({ searchText }) {
             <NowShowing />
           </div>
 
-          <div className='mb-12'>
+          <div className='pb-12'>
             <UpcomingMovies />
           </div>
         </div>

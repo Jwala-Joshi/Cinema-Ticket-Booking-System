@@ -1,18 +1,25 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const MovieCard = ({ movie }) => {
+const MovieCard = ({ movie, source, showStatus = false }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/movie/${movie.id}`);
+    if (movie.isCinemaMovie) {
+      navigate(`/movie/${movie.id}`,{ state: { source } });
+    } else {
+      navigate(`/movie/${movie.id}`, { state: { fromAddMovie: true } });
+    }
+  };
+
+  const formatUpcomingDate = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   return (
-    <div
-      className='group relative cursor-pointer overflow-hidden rounded-lg bg-gray-900 shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-red-500/20'
-      onClick={handleClick}
-    >
+    <div className='group relative cursor-pointer overflow-hidden rounded-lg bg-gray-900 shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-red-500/20'>
       <div className='relative aspect-[2/3] overflow-hidden'>
         <img
           src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -23,8 +30,11 @@ const MovieCard = ({ movie }) => {
 
         <div className='absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100'>
           <div className='absolute bottom-0 left-0 right-0 p-4'>
-            <button className='w-full px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full font-semibold text-sm hover:from-red-500 hover:to-red-600 transition-all duration-300 transform hover:scale-105'>
-              See Details
+            <button 
+              className='w-full px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full font-semibold text-sm hover:from-red-500 hover:to-red-600 transition-all duration-300 transform hover:scale-105'
+              onClick={handleClick} 
+            >
+              {movie.isCinemaMovie ? movie.status === 'UPCOMING'?'See Details':'Book Now' : 'See Details'}
             </button>
           </div>
         </div>
@@ -35,6 +45,14 @@ const MovieCard = ({ movie }) => {
             <span className='text-white text-xs font-bold'>
               {movie.vote_average.toFixed(1)}
             </span>
+          </div>
+        )}
+
+        {movie.isCinemaMovie && movie.status === 'UPCOMING' && movie.upcomingReleaseDate && (
+          <div className='absolute bottom-2 left-2 right-2 upcoming-release-info'>
+            <div className='bg-blue-600/90 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full text-center'>
+              In Cinema: {formatUpcomingDate(movie.upcomingReleaseDate)}
+            </div>
           </div>
         )}
       </div>

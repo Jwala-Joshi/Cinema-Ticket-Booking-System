@@ -4,14 +4,20 @@ import { useNavigate } from 'react-router-dom';
 
 function Settings() {
   const [user, setUser] = useState(null);
+  const [activeSection, setActiveSection] = useState('');
+  const [nameData, setNameData] = useState({ name: '', surname: '', currentPassword: '' });
+  const [emailData, setEmailData] = useState({ email: '', currentPassword: '' });
+  const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const loggedInUser = isLoggedIn();
-    if (!loggedInUser) {
-      navigate('/');
-    } else {
+    if (!loggedInUser) navigate('/');
+    else {
       setUser(loggedInUser);
+      setNameData({ name: loggedInUser.userName, surname: loggedInUser.surname, currentPassword: '' });
+      setEmailData({ email: loggedInUser.email, currentPassword: '' });
     }
   }, [navigate]);
 
@@ -23,113 +29,256 @@ function Settings() {
     );
   }
 
-  return (
-    <div className='min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-12'>
-      <div className='container mx-auto px-4'>
-        
-        <div className='text-center mb-12'>
-          <h1 className='text-4xl md:text-5xl font-bold text-white mb-4'>
-            ⚙️ Settings
-          </h1>
-          <p className='text-gray-400 mb-4'>
-            Manage your account preferences
-          </p>
-          <div className='h-1 w-20 bg-gradient-to-r from-red-600 to-red-800 rounded mx-auto'></div>
-        </div>
+  const handleInputChange = (setter) => (e) => {
+    const { name, value } = e.target;
+    setter(prev => ({ ...prev, [name]: value }));
+  };
 
-        <div className='max-w-2xl mx-auto space-y-6'>
-          
-          <div className='bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-red-900/30 shadow-2xl'>
-            <h2 className='text-xl font-bold text-white mb-4 flex items-center gap-2'>
-              <span>👤</span> Account Settings
-            </h2>
-            <div className='space-y-4'>
-              <div className='flex justify-between items-center p-4 bg-black/40 rounded-lg border border-gray-800 hover:border-gray-700 transition-colors'>
-                <div>
-                  <p className='text-white font-semibold'>Email Notifications</p>
-                  <p className='text-gray-400 text-sm'>Receive booking confirmations via email</p>
-                </div>
-                <label className='relative inline-flex items-center cursor-pointer'>
-                  <input type='checkbox' className='sr-only peer' defaultChecked />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-                </label>
-              </div>
+  const submitNameChange = async () => {
+    setMessage('');
+    if (!nameData.currentPassword) {
+      setMessage('Enter current password to update name.');
+      return;
+    }
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/users/${user.userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nameData),
+      });
+      if (!response.ok) throw new Error('Failed to update name.');
+      const updatedUser = await response.json();
+      setUser(updatedUser);
+      setActiveSection('');
+      setMessage('Name updated successfully!');
+    } catch (err) {
+      console.error(err);
+      setMessage('Error updating name. Check your password.');
+    }
+  };
 
-              <div className='flex justify-between items-center p-4 bg-black/40 rounded-lg border border-gray-800 hover:border-gray-700 transition-colors'>
-                <div>
-                  <p className='text-white font-semibold'>SMS Notifications</p>
-                  <p className='text-gray-400 text-sm'>Get text updates about your bookings</p>
-                </div>
-                <label className='relative inline-flex items-center cursor-pointer'>
-                  <input type='checkbox' className='sr-only peer' />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-                </label>
-              </div>
-            </div>
-          </div>
+  const submitEmailChange = async () => {
+    setMessage('');
+    if (!emailData.currentPassword) {
+      setMessage('Enter current password to update email.');
+      return;
+    }
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/users/${user.userId}/email`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailData),
+      });
+      if (!response.ok) throw new Error('Failed to update email.');
+      const updatedUser = await response.json();
+      setUser(updatedUser);
+      setActiveSection('');
+      setMessage('Email updated successfully!');
+    } catch (err) {
+      console.error(err);
+      setMessage('Error updating email. Check your password.');
+    }
+  };
 
-          <div className='bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-red-900/30 shadow-2xl'>
-            <h2 className='text-xl font-bold text-white mb-4 flex items-center gap-2'>
-              <span>🔒</span> Privacy & Security
-            </h2>
-            <div className='space-y-3'>
-              <button className='w-full text-left p-4 bg-black/40 rounded-lg border border-gray-800 hover:border-red-600 transition-all text-white hover:bg-black/60'>
-                Change Password
-              </button>
-              <button className='w-full text-left p-4 bg-black/40 rounded-lg border border-gray-800 hover:border-red-600 transition-all text-white hover:bg-black/60'>
-                Two-Factor Authentication
-              </button>
-              <button className='w-full text-left p-4 bg-black/40 rounded-lg border border-gray-800 hover:border-red-600 transition-all text-white hover:bg-black/60'>
-                Privacy Settings
-              </button>
-            </div>
-          </div>
+  const submitPasswordChange = async () => {
+    setMessage('');
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      setMessage('Fill all password fields.');
+      return;
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setMessage('New password and confirm password do not match.');
+      return;
+    }
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/users/${user.userId}/password`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(passwordData),
+      });
+      if (!response.ok) throw new Error('Failed to update password.');
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setActiveSection('');
+      setMessage('Password updated successfully!');
+    } catch (err) {
+      console.error(err);
+      setMessage('Error updating password. Check your current password.');
+    }
+  };
 
-          <div className='bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-red-900/30 shadow-2xl'>
-            <h2 className='text-xl font-bold text-white mb-4 flex items-center gap-2'>
-              <span>🎨</span> Preferences
-            </h2>
-            <div className='space-y-4'>
-              <div className='p-4 bg-black/40 rounded-lg border border-gray-800'>
-                <label className='text-white font-semibold block mb-2'>Language</label>
-                <select className='w-full bg-gray-800 text-white rounded-lg px-4 py-2 border border-gray-700 focus:border-red-600 focus:outline-none'>
-                  <option>English</option>
-                  <option>Spanish</option>
-                  <option>French</option>
-                  <option>German</option>
-                </select>
-              </div>
-
-              <div className='p-4 bg-black/40 rounded-lg border border-gray-800'>
-                <label className='text-white font-semibold block mb-2'>Theme</label>
-                <select className='w-full bg-gray-800 text-white rounded-lg px-4 py-2 border border-gray-700 focus:border-red-600 focus:outline-none'>
-                  <option>Dark (Default)</option>
-                  <option>Light</option>
-                  <option>Auto</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className='bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-red-900/50 shadow-2xl'>
-            <h2 className='text-xl font-bold text-red-500 mb-4 flex items-center gap-2'>
-              <span>⚠️</span> Danger Zone
-            </h2>
-            <div className='space-y-3'>
-              <button className='w-full text-left p-4 bg-red-900/20 rounded-lg border border-red-800 hover:border-red-600 transition-all text-red-400 hover:bg-red-900/30'>
-                Delete Account
-              </button>
-            </div>
-          </div>
-
-          <div className='text-center pt-6'>
+  const renderForm = () => {
+  switch (activeSection) {
+    case 'name':
+      return (
+        <div className='space-y-4 transition-opacity duration-300'>
+          <input
+            type='text'
+            name='name'
+            placeholder='First Name'
+            onChange={handleInputChange(setNameData)}
+            className='w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-red-600'
+          />
+          <input
+            type='text'
+            name='surname'
+            placeholder='Last Name'
+            onChange={handleInputChange(setNameData)}
+            className='w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-red-600'
+          />
+          <input
+            type='password'
+            name='currentPassword'
+            placeholder='Current Password'
+            value={nameData.currentPassword}
+            onChange={handleInputChange(setNameData)}
+            className='w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-red-600'
+          />
+          <div className="flex gap-4">
             <button
-              onClick={() => navigate('/')}
-              className='px-8 py-3 bg-transparent border-2 border-gray-700 text-white rounded-full font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300'
+              onClick={submitNameChange}
+              className='w-full py-3 bg-blue-600 rounded-lg font-semibold text-white hover:bg-blue-500 transition-all'
             >
-              Back to Home
+              Update Name
+            </button>
+            <button
+              onClick={() => setActiveSection('')}
+              className='w-full py-3 bg-gray-600 rounded-lg font-semibold text-white hover:bg-gray-500 transition-all'
+            >
+              Cancel
             </button>
           </div>
+        </div>
+      );
+    case 'email':
+      return (
+        <div className='space-y-4 transition-opacity duration-300'>
+          <input
+            type='email'
+            name='email'
+            placeholder='Email'
+            onChange={handleInputChange(setEmailData)}
+            className='w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-red-600'
+          />
+          <input
+            type='password'
+            name='currentPassword'
+            placeholder='Current Password'
+            value={emailData.currentPassword}
+            onChange={handleInputChange(setEmailData)}
+            className='w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-red-600'
+          />
+          <div className="flex gap-4">
+            <button
+              onClick={submitEmailChange}
+              className='w-full py-3 bg-blue-600 rounded-lg font-semibold text-white hover:bg-blue-500 transition-all'
+            >
+              Update Email
+            </button>
+            <button
+              onClick={() => setActiveSection('')}
+              className='w-full py-3 bg-gray-600 rounded-lg font-semibold text-white hover:bg-gray-500 transition-all'
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      );
+    case 'password':
+      return (
+        <div className='space-y-4 transition-opacity duration-300'>
+          <input
+            type='password'
+            name='currentPassword'
+            placeholder='Current Password'
+            value={passwordData.currentPassword}
+            onChange={handleInputChange(setPasswordData)}
+            className='w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-red-600'
+          />
+          <input
+            type='password'
+            name='newPassword'
+            placeholder='New Password'
+            value={passwordData.newPassword}
+            onChange={handleInputChange(setPasswordData)}
+            className='w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-red-600'
+          />
+          <input
+            type='password'
+            name='confirmPassword'
+            placeholder='Confirm New Password'
+            value={passwordData.confirmPassword}
+            onChange={handleInputChange(setPasswordData)}
+            className='w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-red-600'
+          />
+          <div className="flex gap-4">
+            <button
+              onClick={submitPasswordChange}
+              className='w-full py-3 bg-red-600 rounded-lg font-semibold text-white hover:bg-red-500 transition-all'
+            >
+              Update Password
+            </button>
+            <button
+              onClick={() => setActiveSection('')}
+              className='w-full py-3 bg-gray-600 rounded-lg font-semibold text-white hover:bg-gray-500 transition-all'
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      );
+    default:
+      return (
+        <div className='flex flex-col gap-4'>
+          <button
+            onClick={() => setActiveSection('name')}
+            className='w-full text-left p-4 bg-black/40 rounded-lg border border-gray-800 hover:border-red-600 transition-all text-white hover:bg-black/60'
+          >
+            Change Name
+          </button>
+          <button
+            onClick={() => setActiveSection('email')}
+            className='w-full text-left p-4 bg-black/40 rounded-lg border border-gray-800 hover:border-red-600 transition-all text-white hover:bg-black/60'
+          >
+            Change Email
+          </button>
+          <button
+            onClick={() => setActiveSection('password')}
+            className='w-full text-left p-4 bg-black/40 rounded-lg border border-gray-800 hover:border-red-600 transition-all text-white hover:bg-black/60'
+          >
+            Change Password
+          </button>
+        </div>
+      );
+  }
+};
+
+
+  return (
+    <div className='min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-12'>
+      <div className='container mx-auto px-4 max-w-2xl'>
+        <div className='text-center mb-8'>
+          <h1 className='text-4xl md:text-5xl font-bold text-white mb-4'>Settings</h1>
+          <div className='h-1 w-20 bg-gradient-to-r from-red-600 to-red-800 rounded mx-auto'></div>
+          {message && <div className='mt-4 text-red-400 font-semibold'>{message}</div>}
+        </div>
+
+        <div className='bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-red-900/30 shadow-2xl'>
+          {renderForm()}
+        </div>
+
+        <div className='text-center pt-6'>
+          <button
+            onClick={() => navigate('/profile')}
+            className='px-8 py-3 bg-transparent border-2 border-gray-700 text-white rounded-full font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300'
+          >
+            Back to Profile
+          </button>
+          <button
+            onClick={() => navigate('/')}
+            className='px-8 py-3 bg-transparent border-2 border-gray-700 text-white rounded-full font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300'
+          >
+            Back to Home
+          </button>
         </div>
       </div>
     </div>

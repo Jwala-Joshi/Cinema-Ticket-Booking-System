@@ -12,11 +12,10 @@ async function FetchMoviesByGenre(ACCESS_TOKEN, page, genreIds) {
     });
     const data = await response.json();
 
-    const filteredMovies = data.results.filter(
-      (movie) => movie.backdrop_path !== null,
-    );
-
-    return { filteredMovies, totalPages: data.total_pages };
+    return { 
+      filteredMovies:data.results,
+      totalPages: data.total_pages 
+    };
   } catch (error) {
     console.error('Error fetching movies by genre:', error);
     return null;

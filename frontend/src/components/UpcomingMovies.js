@@ -4,12 +4,14 @@ import MovieCard from './MovieCard';
 const UpcomingMovies = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
-  const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:8080/api/v1';
 
   useEffect(() => {
     const fetchUpcoming = async () => {
       try {
         setLoading(true);
+        console.log('Fetching UPCOMING movies from:', `${BASE_URL}/movies/upcoming`);
+        
         const response = await fetch(`${BASE_URL}/movies/upcoming`, {
           method: 'GET',
           headers: {
@@ -17,11 +19,32 @@ const UpcomingMovies = () => {
           },
         });
 
+        console.log('Response status:', response.status);
+
         if (response.ok) {
           const data = await response.json();
-          setMovies(data);
+          console.log('Received UPCOMING movies:', data.length, data);
+          
+          // Transform backend data to match TMDB structure for MovieCard
+          const transformedMovies = data.map(movie => ({
+            id: movie.tmdbId, // Use tmdbId for navigation
+            dbId: movie.id, // Keep database ID for bookings
+            title: movie.title,
+            overview: movie.overview,
+            poster_path: movie.posterPath,
+            backdrop_path: movie.backdropPath,
+            release_date: movie.releaseDate,
+            vote_average: movie.voteAverage,
+            status: movie.status,
+            upcomingReleaseDate: movie.upcomingReleaseDate,
+            isCinemaMovie: true // Flag to identify cinema movies
+          }));
+          
+          console.log('Transformed movies:', transformedMovies);
+          setMovies(transformedMovies);
         } else {
-          console.error('Failed to fetch upcoming movies');
+          const errorText = await response.text();
+          console.error('Failed to fetch upcoming movies:', errorText);
         }
       } catch (error) {
         console.error('Error fetching upcoming movies:', error);
@@ -39,9 +62,6 @@ const UpcomingMovies = () => {
         <h2 className='text-2xl text-left md:text-3xl font-bold text-white mb-2'>
           🔜 Coming Soon
         </h2>
-        {/* <p className='text-gray-400 text-sm mb-3'>
-          Upcoming releases in our cinema
-        </p> */}
         <div className='h-1 w-20 bg-gradient-to-r from-red-600 to-red-800 rounded'></div>
       </div>
 
@@ -62,10 +82,10 @@ const UpcomingMovies = () => {
         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6'>
           {movies.map((movie) => (
             <div
-              key={movie.id}
+              key={movie.dbId}
               className='transform transition-all duration-300 hover:scale-105'
             >
-              <MovieCard movie={movie} />
+              <MovieCard movie={movie} showStatus={true} />
             </div>
           ))}
         </div>

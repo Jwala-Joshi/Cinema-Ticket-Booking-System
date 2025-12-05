@@ -42,6 +42,9 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
     logout();
     onLogout();
     setIsMenuOpen(false);
+    setTimeout(() => {
+      navigate('/');
+    }, 1000);
   };
 
   const handleMenuClick = () => {
@@ -59,6 +62,10 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
       navigate('/settings');
     } else if (option === 'AddMovie') {
       navigate('/add-movie');
+    } else if(option == 'Users'){
+      navigate('/users')
+    } else if (option === 'Logout'){
+      handleLogout();
     }
   };
 
@@ -66,7 +73,7 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
     <>
       <nav 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled 
+          isScrolled || isMobileMenuOpen
             ? 'bg-black/95 backdrop-blur-lg shadow-lg' 
             : 'bg-gradient-to-b from-black/90 to-transparent'
         }`}
@@ -126,6 +133,25 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
                             <span>Add Movie</span>
                           </li>
                         )}
+                        {user.role === 'ADMIN' && (
+                          <>
+                            <li 
+                              className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200 flex items-center gap-3 border-t border-gray-700' 
+                              onClick={() => handleOptionClick('AddMovie')}
+                            >
+                              <span className='text-xl'>➕</span>
+                              <span>Add Movie</span>
+                            </li>
+
+                            <li 
+                              className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200 flex items-center gap-3 border-t border-gray-700' 
+                              onClick={() => handleOptionClick('Users')}
+                            >
+                              <span className='text-xl'>👥</span>
+                              <span>User Data</span>
+                            </li>
+                          </>
+                        )}
                         <li 
                           className='p-3 hover:bg-gray-800 cursor-pointer rounded text-white transition-colors duration-200 flex items-center gap-3' 
                           onClick={() => handleOptionClick('Settings')}
@@ -164,7 +190,7 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
 
             <button
               className='lg:hidden flex flex-col gap-1.5 p-2'
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             >
               <span className={`w-6 h-0.5 bg-white transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
               <span className={`w-6 h-0.5 bg-white transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
@@ -218,6 +244,30 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
                       >
                         <span>➕</span> Add Movie
                       </button>
+                    )}
+
+                    {user.role === 'ADMIN' && (
+                      <>
+                        <button
+                          className='w-full px-4 py-3 bg-transparent text-white border-2 border-white/30 rounded-lg font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300 text-left flex items-center gap-3'
+                          onClick={() => {
+                            handleOptionClick('AddMovie');
+                            setIsMobileMenuOpen(false);
+                          }}
+                        >
+                          <span>➕</span> Add Movie
+                        </button>
+
+                        <button
+                          className='w-full px-4 py-3 bg-transparent text-white border-2 border-white/30 rounded-lg font-semibold hover:border-red-600 hover:bg-red-600/10 transition-all duration-300 text-left flex items-center gap-3'
+                          onClick={() => {
+                            handleOptionClick('Users');
+                            setIsMobileMenuOpen(false);
+                          }}
+                        >
+                          <span>👥</span> User Data
+                        </button>
+                      </>
                     )}
                     
                     <button
