@@ -43,40 +43,35 @@ public class CinemaMovieController {
             System.out.println("Attempting to add movie: " + movie.getTitle());
             System.out.println("Status: " + movie.getStatus());
             System.out.println("TMDB ID: " + movie.getTmdbId());
-            
-            // Check if movie already exists
+
             if (cinemaMovieRepository.existsByTmdbId(movie.getTmdbId())) {
                 Map<String, String> errorResponse = new HashMap<>();
                 errorResponse.put("message", "Movie already exists in cinema");
                 errorResponse.put("error", "DUPLICATE_MOVIE");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
             }
-            
-            // Validate required fields
             if (movie.getTmdbId() == null || movie.getTitle() == null || movie.getStatus() == null) {
                 Map<String, String> errorResponse = new HashMap<>();
                 errorResponse.put("message", "Missing required fields: tmdbId, title, or status");
                 errorResponse.put("error", "VALIDATION_ERROR");
                 return ResponseEntity.badRequest().body(errorResponse);
             }
-            
-            // Set addedDate if not already set
             if (movie.getAddedDate() == null) {
                 movie.setAddedDate(LocalDate.now());
             }
-            
+
             CinemaMovie savedMovie = cinemaMovieRepository.save(movie);
             System.out.println("Movie saved successfully with ID: " + savedMovie.getId());
-            
+
             Map<String, Object> successResponse = new HashMap<>();
             successResponse.put("message", "Movie added successfully");
             successResponse.put("movie", savedMovie);
-            
+
             return ResponseEntity.status(HttpStatus.CREATED).body(successResponse);
         } catch (Exception e) {
             System.err.println("Error adding movie: " + e.getMessage());
             e.printStackTrace();
-            
+
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "Error adding movie: " + e.getMessage());
             errorResponse.put("error", "INTERNAL_ERROR");
@@ -91,14 +86,14 @@ public class CinemaMovieController {
         try {
             CinemaMovie movie = cinemaMovieRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Movie not found"));
-            
+
             movie.setStatus(status);
             CinemaMovie updatedMovie = cinemaMovieRepository.save(movie);
-            
+
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Status updated successfully");
             response.put("movie", updatedMovie);
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
@@ -115,9 +110,9 @@ public class CinemaMovieController {
                 errorResponse.put("message", "Movie not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
             }
-            
+
             cinemaMovieRepository.deleteById(id);
-            
+
             Map<String, String> response = new HashMap<>();
             response.put("message", "Movie deleted successfully");
             return ResponseEntity.ok(response);
@@ -147,7 +142,7 @@ public class CinemaMovieController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }
-    
+
     @GetMapping("/tmdb/{tmdbId}")
     public ResponseEntity<?> getMovieByTmdbId(@PathVariable Long tmdbId) {
         try {

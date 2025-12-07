@@ -25,10 +25,9 @@ const UpcomingMovies = () => {
           const data = await response.json();
           console.log('Received UPCOMING movies:', data.length, data);
           
-          // Transform backend data to match TMDB structure for MovieCard
           const transformedMovies = data.map(movie => ({
-            id: movie.tmdbId, // Use tmdbId for navigation
-            dbId: movie.id, // Keep database ID for bookings
+            id: movie.tmdbId,
+            dbId: movie.id,
             title: movie.title,
             overview: movie.overview,
             poster_path: movie.posterPath,
@@ -37,7 +36,7 @@ const UpcomingMovies = () => {
             vote_average: movie.voteAverage,
             status: movie.status,
             upcomingReleaseDate: movie.upcomingReleaseDate,
-            isCinemaMovie: true // Flag to identify cinema movies
+            isCinemaMovie: true
           }));
           
           console.log('Transformed movies:', transformedMovies);

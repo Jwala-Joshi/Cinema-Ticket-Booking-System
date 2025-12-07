@@ -10,7 +10,6 @@ const SearchResults = ({ searchText }) => {
   const [loading, setLoading] = useState(false);
 
   const ACCESS_TOKEN = process.env.REACT_APP_ACCESS_TOKEN || '';
-  const MOVIES_PER_PAGE = 20;
 
   useEffect(() => {
     const fetchMovies = async () => {

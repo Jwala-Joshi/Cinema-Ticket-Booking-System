@@ -16,15 +16,11 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
   const [showAddOptions, setShowAddOptions] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState({ show: false, type: '', message: '' });
-
-  // For admin adding movies
   const [status, setStatus] = useState('NOW_SHOWING');
   const [tempDate, setTempDate] = useState('');
   const [tempTime, setTempTime] = useState('');
   const [showDates, setShowDates] = useState([]);
   const [upcomingDate, setUpcomingDate] = useState('');
-
-  // For users booking tickets (NOW_SHOWING flow)
   const [selectedSession, setSelectedSession] = useState(null);
   const [availableSessions, setAvailableSessions] = useState([]);
   const [upcomingReleaseDate, setUpcomingReleaseDate] = useState(null);
@@ -37,8 +33,6 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
       setMovie(movieData);
       
       const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:8080/api/v1';
-      
-      // If this is a NOW_SHOWING movie, fetch cinema data from backend
       if (passedSource === 'NOW_SHOWING') {
         try {
           const response = await fetch(`${BASE_URL}/movies/now-showing`, {
@@ -50,11 +44,9 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
 
           if (response.ok) {
             const data = await response.json();
-            // Find the specific movie by tmdbId
             const cinemaMovie = data.find(m => m.tmdbId === parseInt(id));
             
             if (cinemaMovie && cinemaMovie.showTimes) {
-              // Transform showTimes array into sessions
               const sessions = cinemaMovie.showTimes.map((showTime, index) => {
                 const dateTime = new Date(showTime);
                 return {
@@ -62,12 +54,11 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
                   movieDbId: cinemaMovie.id,
                   date: dateTime.toISOString().split('T')[0],
                   time: dateTime.toTimeString().slice(0, 5),
-                  availableSeats: 50, // Default seats - you may want to fetch actual availability
+                  availableSeats: 50,
                   dateTime: showTime
                 };
               });
               
-              // Sort sessions by date and time
               sessions.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
               setAvailableSessions(sessions);
             }
@@ -77,7 +68,6 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
         }
       }
       
-      // If this is an UPCOMING movie, fetch the upcoming release date
       if (passedSource === 'UPCOMING') {
         try {
           const response = await fetch(`${BASE_URL}/movies/upcoming`, {
@@ -89,7 +79,6 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
 
           if (response.ok) {
             const data = await response.json();
-            // Find the specific movie by tmdbId
             const cinemaMovie = data.find(m => m.tmdbId === parseInt(id));
             
             if (cinemaMovie && cinemaMovie.upcomingReleaseDate) {
@@ -173,7 +162,6 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
 
   const handleSessionSelect = (session) => {
     setSelectedSession(session);
-    // Scroll to seat plan
     setTimeout(() => {
       document.getElementById('seat-plan-section')?.scrollIntoView({ 
         behavior: 'smooth',
@@ -213,7 +201,6 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
 
       <div className='container mx-auto px-4 py-8'>
         <div className='max-w-6xl mx-auto'>
-          {/* Movie Details Section */}
           <div className='movie-hero mb-12'>
             <div
               className='movie-backdrop'

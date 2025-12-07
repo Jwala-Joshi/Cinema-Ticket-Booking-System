@@ -42,12 +42,10 @@ const RecommendedMovies = () => {
         const response = await FetchMoviesByGenre(ACCESS_TOKEN, page, genreIds);
         if (response) {
           const { filteredMovies, totalPages } = response;
-          // Remove duplicate movies using movie.id
           const uniqueMovies = Array.from(
             new Map(filteredMovies.map(movie => [movie.id, movie]))
           ).map(([_, movie]) => movie);
 
-          // Also remove movies user already watched
           const watchedMovieIds = new Set(recommendedMovies.map(order => order.movieId));
 
           const finalMovies = uniqueMovies.filter(movie => !watchedMovieIds.has(movie.id));
@@ -68,8 +66,6 @@ const RecommendedMovies = () => {
         const recommendedMoviesData = await GetRecommendedMovies(userId);
 
         if (Array.isArray(recommendedMoviesData) && recommendedMoviesData.length > 0) {
-
-          // Count genre frequency
           const genreFrequency = {};
 
           recommendedMoviesData.forEach(order => {
@@ -86,11 +82,9 @@ const RecommendedMovies = () => {
             });
           });
 
-          // Sort genres by frequency (descending)
           const sortedGenres = Object.keys(genreFrequency)
             .sort((a, b) => genreFrequency[b] - genreFrequency[a]);
 
-          // Convert sorted genre names -> TMDB IDs
           const recommendedGenreIds = sortedGenres
             .map(g => genres[g])
             .filter(Boolean);
@@ -175,11 +169,10 @@ const RecommendedMovies = () => {
           <div className='flex flex-col sm:flex-row justify-center items-center gap-4 mt-12'>
             <button
               onClick={handlePrevPage}
-              className={`px-8 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${
-                page === 1
+              className={`px-8 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${page === 1
                   ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-500 hover:to-red-600 hover:shadow-lg hover:shadow-red-500/50 transform hover:-translate-y-0.5'
-              }`}
+                }`}
               disabled={page === 1}
             >
               ← Previous
@@ -187,11 +180,10 @@ const RecommendedMovies = () => {
 
             <button
               onClick={handleNextPage}
-              className={`px-8 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${
-                page === totalPages
+              className={`px-8 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${page === totalPages
                   ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-500 hover:to-red-600 hover:shadow-lg hover:shadow-red-500/50 transform hover:-translate-y-0.5'
-              }`}
+                }`}
               disabled={page >= totalPages}
             >
               Next →

@@ -3,7 +3,7 @@ import FilterValidMovies from '../utils/filterValidMovies';
 async function FetchMoviesBySearch(ACCESS_TOKEN, page, searchText) {
   try {
     const promises = [];
-    const pagesToFetch = 2;
+    const pagesToFetch = 10;
     
     for (let i = 0; i < pagesToFetch; i++) {
       const currentPage = (page - 1) * pagesToFetch + i + 1;

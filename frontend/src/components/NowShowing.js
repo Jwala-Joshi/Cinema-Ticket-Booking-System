@@ -25,10 +25,9 @@ const NowShowing = () => {
           const data = await response.json();
           console.log('Received NOW_SHOWING movies:', data.length, data);
           
-          // Transform backend data to match TMDB structure for MovieCard
           const transformedMovies = data.map(movie => ({
             id: movie.tmdbId,
-            dbId: movie.id, // Keep database ID for bookings
+            dbId: movie.id,
             title: movie.title,
             overview: movie.overview,
             poster_path: movie.posterPath,
@@ -37,7 +36,7 @@ const NowShowing = () => {
             vote_average: movie.voteAverage,
             status: movie.status,
             showTimes: movie.showTimes,
-            isCinemaMovie: true // Flag to identify cinema movies
+            isCinemaMovie: true
           }));
           
           console.log('Transformed movies:', transformedMovies);
