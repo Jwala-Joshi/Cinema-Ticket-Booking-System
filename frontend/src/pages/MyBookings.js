@@ -31,7 +31,30 @@ function MyBookings() {
 
       if (response.ok) {
         const data = await response.json();
-        setBookings(Array.isArray(data) ? data : (data ? [data] : []));
+        const bookingsArray = Array.isArray(data) ? data : (data ? [data] : []);
+    
+        const bookingsWithPosters = await Promise.all(
+          bookingsArray.map(async (booking) => {
+            if (booking.movieId) {
+              try {
+                const movieResponse = await fetch(`${BASE_URL}/movies/${booking.movieId}`);
+                if (movieResponse.ok) {
+                  const movieData = await movieResponse.json();
+                  return {
+                    ...booking,
+                    moviePosterPath: movieData.posterPath || booking.moviePosterPath,
+                    movieBackdropPath: movieData.backdropPath || booking.movieBackdropPath,
+                  };
+                }
+              } catch (err) {
+                console.error('Error fetching movie details:', err);
+              }
+            }
+            return booking;
+          })
+        );
+        
+        setBookings(bookingsWithPosters);
       } else {
         setBookings([]);
       }
@@ -41,6 +64,16 @@ function MyBookings() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getMoviePosterUrl = (booking) => {
+    if (booking.moviePosterPath) {
+      if (booking.moviePosterPath.startsWith('http')) {
+        return booking.moviePosterPath;
+      }
+      return `https://image.tmdb.org/t/p/w300${booking.moviePosterPath}`;
+    }
+    return 'https://placehold.co/300x450?text=No+Image';
   };
 
   if (loading) {
@@ -61,6 +94,7 @@ function MyBookings() {
         <div className='text-center mb-12'>
           <h1 className='text-4xl md:text-5xl font-bold text-white mb-4'>
             🎫 My Bookings
+            {console.log(bookings)}
           </h1>
           <p className='text-gray-400 mb-4'>
             View all your movie ticket bookings
@@ -91,15 +125,11 @@ function MyBookings() {
                   
                   <div className='md:w-48 lg:w-56 flex-shrink-0'>
                     <img
-                      src={
-                        booking.movieId
-                          ? `https://image.tmdb.org/t/p/w300${booking.movieId}`
-                          : 'https://via.placeholder.com/300x450?text=No+Image'
-                      }
+                      src={getMoviePosterUrl(booking)}
                       alt={booking.movieTitle}
                       className='w-full h-64 md:h-full object-cover'
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/300x450?text=No+Image';
+                        e.target.src = 'https://placehold.co/300x450?text=No+Image';
                       }}
                     />
                   </div>
@@ -151,7 +181,7 @@ function MyBookings() {
                     <div className='border-t border-gray-700 pt-3 mt-3'>
                       <p className='text-gray-400 text-sm mb-1'>Total Price</p>
                       <p className='text-2xl font-bold text-green-500'>
-                        €{booking.moviePrice * (booking.seat?.length || 1)}
+                        Rs {booking.moviePrice * (booking.seat?.length || 1)}
                       </p>
                     </div>
 

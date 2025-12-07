@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 public class UserController {
@@ -52,6 +54,30 @@ public class UserController {
         }
         return ResponseEntity.ok(user);
     }
+
+    @PutMapping("/api/v1/users/{id}")
+    public ResponseEntity<?> updateUserName(@PathVariable Long id, @RequestBody NameUpdateRequest req) {
+        try {
+            User updatedUser = userService.updateName(id, req.getName(), req.getSurname(), req.getCurrentPassword());
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    @PutMapping("/api/v1/users/{id}/email")
+    public ResponseEntity<?> updateUserEmail(@PathVariable Long id, @RequestBody EmailUpdateRequest req) {
+        try {
+            User updatedUser = userService.updateEmail(id, req.getEmail(), req.getCurrentPassword());
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
     
     @PutMapping("/api/v1/users/{id}/role")
     public ResponseEntity<User> updateUserRole(@PathVariable Long id, @RequestBody RoleRequest req) {
@@ -73,6 +99,18 @@ public class UserController {
         }
     }
 
+    @PutMapping("/api/v1/users/{id}/passwordUpdate")
+    public ResponseEntity<?> updatePasswordWithValid(@PathVariable Long id, @RequestBody PasswordUpdateRequest req) {
+        try {
+            User updatedUser = userService.updatePassword(id, req.getCurrentPassword(), req.getNewPassword());
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
     @DeleteMapping("/api/v1/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
@@ -81,6 +119,39 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    static class NameUpdateRequest {
+        private String name;
+        private String surname;
+        private String currentPassword;
+        
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public String getSurname() { return surname; }
+        public void setSurname(String surname) { this.surname = surname; }
+        public String getCurrentPassword() { return currentPassword; }
+        public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
+    }
+
+    static class EmailUpdateRequest {
+        private String email;
+        private String currentPassword;
+        
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
+        public String getCurrentPassword() { return currentPassword; }
+        public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
+    }
+
+    static class PasswordUpdateRequest {
+        private String currentPassword;
+        private String newPassword;
+        
+        public String getCurrentPassword() { return currentPassword; }
+        public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
+        public String getNewPassword() { return newPassword; }
+        public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
     }
 
     static class RoleRequest {

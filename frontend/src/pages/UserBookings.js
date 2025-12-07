@@ -114,6 +114,7 @@ function UserBookings() {
         <div className='text-center mb-12'>
           <h1 className='text-4xl md:text-5xl font-bold text-white mb-4'>
             🎫 User Bookings
+            {console.log(bookings)}
           </h1>
           {targetUser && (
             <p className='text-gray-400 mb-4'>
@@ -236,10 +237,10 @@ function UserBookings() {
                         <div className='border-t border-gray-700 pt-4 mt-4'>
                           <p className='text-gray-400 text-sm mb-2'>Total Amount</p>
                           <p className='text-3xl font-bold text-green-500'>
-                            €{((booking.moviePrice || 0) * (booking.seat?.length || 1)).toFixed(2)}
+                            Rs {((booking.moviePrice || 0) * (booking.seat?.length || 1)).toFixed(2)}
                           </p>
                           <p className='text-gray-500 text-xs mt-1'>
-                            €{(booking.moviePrice || 0).toFixed(2)} × {booking.seat?.length || 1} {booking.seat?.length === 1 ? 'seat' : 'seats'}
+                            Rs {(booking.moviePrice || 0).toFixed(2)} × {booking.seat?.length || 1} {booking.seat?.length === 1 ? 'seat' : 'seats'}
                           </p>
                         </div>
 

@@ -34,7 +34,7 @@ function SeatSelector({
 
   return (
     <div className='Cinema'>
-       {sessionTime && <p className='info mb-2 text-sm md:text-sm lg:text-base'>Session Time: {sessionTime}</p>}
+       {sessionTime && <p className='info mb-2 text-sm md:text-sm lg:text-base text-white'>Session Time: {sessionTime}</p>}
       <div className='screen' />
 
       <div className='seats'>

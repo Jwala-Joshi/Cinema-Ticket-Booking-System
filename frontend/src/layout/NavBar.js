@@ -62,7 +62,7 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
       navigate('/settings');
     } else if (option === 'AddMovie') {
       navigate('/add-movie');
-    } else if(option == 'Users'){
+    } else if(option === 'Users'){
       navigate('/users')
     } else if (option === 'Logout'){
       handleLogout();

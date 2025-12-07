@@ -4,8 +4,7 @@ import com.cinema.backend.models.Order;
 import com.cinema.backend.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
+import java.util.List;
 
 @RestController
 public class OrderController {
@@ -19,7 +18,7 @@ public class OrderController {
     }
 
     @GetMapping("/api/v1/order/{userId}")
-    Optional<Order> getLastOrderByUserId(@PathVariable Long userId) {
-        return orderRepository.findFirstByCustomerIdOrderByCreatedAtDesc(userId);
+    public List<Order> getAllOrdersByUserId(@PathVariable Long userId) {
+        return orderRepository.findByCustomerIdOrderByCreatedAtDesc(userId);
     }
 }

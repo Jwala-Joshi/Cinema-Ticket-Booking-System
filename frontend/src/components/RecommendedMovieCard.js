@@ -17,7 +17,6 @@ const RecommendedMovieCard = ({ movie, hallNumber }) => {
       className='group relative cursor-pointer overflow-hidden rounded-lg bg-gray-900 shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-red-500/20'
       onClick={handleClick}
     >
-      {/* Movie Poster */}
       <div className='relative aspect-[2/3] overflow-hidden'>
         <img
           src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -26,7 +25,6 @@ const RecommendedMovieCard = ({ movie, hallNumber }) => {
           loading='lazy'
         />
 
-        {/* Hover Overlay */}
         <div className='absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100'>
           <div className='absolute bottom-0 left-0 right-0 p-4'>
             <button className='w-full px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full font-semibold text-sm hover:from-red-500 hover:to-red-600 transition-all duration-300 transform hover:scale-105'>
@@ -56,9 +54,9 @@ const RecommendedMovieCard = ({ movie, hallNumber }) => {
           </p>
         )}
 
-        <div className='text-xs'>
+        {/* <div className='text-xs'>
           <RecommendedSessionInfo movieSessions={movieSessions} movieId={movie.id} />
-        </div>
+        </div> */}
       </div>
     </div>
   );

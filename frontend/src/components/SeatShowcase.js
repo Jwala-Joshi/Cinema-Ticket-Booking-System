@@ -1,7 +1,7 @@
 function SeatShowcase() {
   return (
     <div>
-      <ul className='ShowCase'>
+      <ul className='ShowCase text-white'>
         <li>
           <span className='seat' /> <small>Available</small>
         </li>

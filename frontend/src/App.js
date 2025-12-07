@@ -56,7 +56,7 @@ function App() {
           <Route path='/profile' element={<Profile />} />
           <Route path='/my-bookings' element={<MyBookings />} />
           <Route path='/settings' element={<Settings />} />
-          <Route path='/add-movie' element={<AddMovie />} />
+          <Route path='/add-movie' element={<AddMovie searchText={searchText} />} />
           <Route path='/users' element={<UserData />} />
           <Route path='/user-bookings/:userId' element={<UserBookings />} />
         </Routes>

@@ -17,11 +17,17 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState({ show: false, type: '', message: '' });
 
+  // For admin adding movies
   const [status, setStatus] = useState('NOW_SHOWING');
   const [tempDate, setTempDate] = useState('');
   const [tempTime, setTempTime] = useState('');
   const [showDates, setShowDates] = useState([]);
   const [upcomingDate, setUpcomingDate] = useState('');
+
+  // For users booking tickets (NOW_SHOWING flow)
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [availableSessions, setAvailableSessions] = useState([]);
+  const [upcomingReleaseDate, setUpcomingReleaseDate] = useState(null);
 
   const API_KEY = process.env.REACT_APP_API_KEY || '';
 
@@ -29,9 +35,74 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
     const fetchData = async () => {
       const movieData = await FetchMovieDetails(id, API_KEY);
       setMovie(movieData);
+      
+      const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:8080/api/v1';
+      
+      // If this is a NOW_SHOWING movie, fetch cinema data from backend
+      if (passedSource === 'NOW_SHOWING') {
+        try {
+          const response = await fetch(`${BASE_URL}/movies/now-showing`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            // Find the specific movie by tmdbId
+            const cinemaMovie = data.find(m => m.tmdbId === parseInt(id));
+            
+            if (cinemaMovie && cinemaMovie.showTimes) {
+              // Transform showTimes array into sessions
+              const sessions = cinemaMovie.showTimes.map((showTime, index) => {
+                const dateTime = new Date(showTime);
+                return {
+                  id: `${cinemaMovie.id}-${index}`,
+                  movieDbId: cinemaMovie.id,
+                  date: dateTime.toISOString().split('T')[0],
+                  time: dateTime.toTimeString().slice(0, 5),
+                  availableSeats: 50, // Default seats - you may want to fetch actual availability
+                  dateTime: showTime
+                };
+              });
+              
+              // Sort sessions by date and time
+              sessions.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+              setAvailableSessions(sessions);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching cinema movie data:', error);
+        }
+      }
+      
+      // If this is an UPCOMING movie, fetch the upcoming release date
+      if (passedSource === 'UPCOMING') {
+        try {
+          const response = await fetch(`${BASE_URL}/movies/upcoming`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            // Find the specific movie by tmdbId
+            const cinemaMovie = data.find(m => m.tmdbId === parseInt(id));
+            
+            if (cinemaMovie && cinemaMovie.upcomingReleaseDate) {
+              setUpcomingReleaseDate(cinemaMovie.upcomingReleaseDate);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching upcoming movie data:', error);
+        }
+      }
     };
     fetchData();
-  }, [id, API_KEY]);
+  }, [id, API_KEY, passedSource]);
 
   const showNotification = (type, message) => {
     setNotification({ show: true, type, message });
@@ -100,6 +171,17 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
     }
   };
 
+  const handleSessionSelect = (session) => {
+    setSelectedSession(session);
+    // Scroll to seat plan
+    setTimeout(() => {
+      document.getElementById('seat-plan-section')?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  };
+
   if (!movie) {
     return (
       <div className='min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center'>
@@ -131,7 +213,8 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
 
       <div className='container mx-auto px-4 py-8'>
         <div className='max-w-6xl mx-auto'>
-          <div className='movie-hero'>
+          {/* Movie Details Section */}
+          <div className='movie-hero mb-12'>
             <div
               className='movie-backdrop'
               style={{
@@ -426,8 +509,128 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
                 )}
               </div>
             </div>
-            {passedSource === 'NOW_SHOWING' && <SeatPlan movie={movie} />}
           </div>
+
+          {/* Session Selection Section - Only for NOW_SHOWING movies */}
+          {passedSource === 'NOW_SHOWING' && !selectedSession && (
+            <div className='mb-12'>
+              <div className='bg-gray-900/80 backdrop-blur-sm rounded-2xl border-2 border-red-900/50 shadow-2xl p-8'>
+                <h2 className='text-3xl font-bold text-white mb-6 flex items-center gap-3'>
+                  <span className='text-red-500'>🎟️</span>
+                  Select Your Showtime
+                </h2>
+                
+                {availableSessions.length === 0 ? (
+                  <div className='text-center py-12'>
+                    <div className='text-6xl mb-4'>📅</div>
+                    <p className='text-gray-400 text-lg'>No showtimes available yet</p>
+                  </div>
+                ) : (
+                  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                    {availableSessions.map((session) => (
+                      <button
+                        key={session.id}
+                        onClick={() => handleSessionSelect(session)}
+                        className='p-6 bg-gray-800 hover:bg-gray-750 rounded-xl border-2 border-gray-700 hover:border-red-500 transition-all duration-300 text-left group'
+                      >
+                        <div className='flex justify-between items-start mb-4'>
+                          <div>
+                            <p className='text-white font-bold text-lg mb-1'>
+                              📅 {FormatDate(session.date)}
+                            </p>
+                            <p className='text-red-400 font-semibold text-xl'>
+                              🕐 {session.time}
+                            </p>
+                          </div>
+                          <div className='bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold'>
+                            {session.availableSeats} seats
+                          </div>
+                        </div>
+                        
+                        <div className='flex items-center justify-between mt-4 pt-4 border-t border-gray-700'>
+                          <span className='text-gray-400 text-sm'>Click to book</span>
+                          <span className='text-red-500 text-xl group-hover:translate-x-1 transition-transform'>
+                            →
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Upcoming Release Date Section - Only for UPCOMING movies */}
+          {passedSource === 'UPCOMING' && upcomingReleaseDate && (
+            <div className='mb-12'>
+              <div className='bg-gradient-to-br from-blue-900/80 to-purple-900/80 backdrop-blur-sm rounded-2xl border-2 border-blue-500/50 shadow-2xl p-8'>
+                <div className='text-center'>
+                  <div className='inline-block mb-4'>
+                    <span className='text-6xl'>🎬</span>
+                  </div>
+                  <h2 className='text-3xl font-bold text-white mb-3'>
+                    Coming to Our Cinema
+                  </h2>
+                  <div className='inline-block bg-white/10 backdrop-blur-sm px-8 py-4 rounded-xl border-2 border-white/20'>
+                    <p className='text-blue-200 text-sm font-semibold mb-1'>Release Date</p>
+                    <p className='text-white text-4xl font-bold'>
+                      {new Date(upcomingReleaseDate).toLocaleDateString('en-US', { 
+                        month: 'long', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                      })}
+                    </p>
+                  </div>
+                  <p className='text-gray-300 mt-6 text-lg'>
+                    Mark your calendar! Tickets will be available soon.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Seat Plan Section - Only shown after session selection */}
+          {passedSource === 'NOW_SHOWING' && selectedSession && (
+            <div id='seat-plan-section' className='mb-12'>
+              <div className='bg-gray-900/80 backdrop-blur-sm rounded-2xl border-2 border-red-900/50 shadow-2xl p-8'>
+                <div className='flex justify-between items-center mb-6'>
+                  <h2 className='text-3xl font-bold text-white flex items-center gap-3'>
+                    <span className='text-red-500'>🎬</span>
+                    Select Your Seats
+                  </h2>
+                  <button
+                    onClick={() => setSelectedSession(null)}
+                    className='px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-semibold transition-colors'
+                  >
+                    ← Change Showtime
+                  </button>
+                </div>
+                
+                <div className='bg-gray-800/50 p-4 rounded-lg mb-6'>
+                  <div className='flex flex-wrap gap-4 text-sm'>
+                    <p className='text-gray-300'>
+                      <span className='text-red-400 font-semibold'>Movie:</span> {movie.title}
+                    </p>
+                    <p className='text-gray-300'>
+                      <span className='text-red-400 font-semibold'>Date:</span> {FormatDate(selectedSession.date)}
+                    </p>
+                    <p className='text-gray-300'>
+                      <span className='text-red-400 font-semibold'>Time:</span> {selectedSession.time}
+                    </p>
+                    <p className='text-gray-300'>
+                      <span className='text-red-400 font-semibold'>Available:</span> {selectedSession.availableSeats} seats
+                    </p>
+                  </div>
+                </div>
+
+                <SeatPlan 
+                  movie={movie} 
+                  movieSession={selectedSession}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -65,4 +65,46 @@ public class UserService {
         }
         userRepository.deleteById(id);
     }
+
+    public User updateName(Long id, String name, String surname, String currentPassword) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if (!isPasswordMatch(currentPassword, user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+        
+        user.setName(name);
+        user.setSurname(surname);
+        return userRepository.save(user);
+    }
+
+    public User updateEmail(Long id, String email, String currentPassword) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if (!isPasswordMatch(currentPassword, user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        User existingUser = userRepository.findByEmail(email);
+        if (existingUser != null && !existingUser.getId().equals(id)) {
+            throw new RuntimeException("Email already in use");
+        }
+        
+        user.setEmail(email);
+        return userRepository.save(user);
+    }
+
+    public User updatePassword(Long id, String currentPassword, String newPassword) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if (!isPasswordMatch(currentPassword, user.getPassword())) {
+            throw new RuntimeException("Invalid current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        return userRepository.save(user);
+    }
 }
