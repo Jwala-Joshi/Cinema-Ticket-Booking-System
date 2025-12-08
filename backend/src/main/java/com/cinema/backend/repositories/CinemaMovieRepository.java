@@ -14,10 +14,19 @@ public interface CinemaMovieRepository extends JpaRepository<CinemaMovie, Long> 
     List<CinemaMovie> findByStatus(String status);
     
     @Query("SELECT m FROM CinemaMovie m WHERE m.status = 'NOW_SHOWING'")
-    List<CinemaMovie> findCurrentlyShowing(LocalDate currentDate);
+    List<CinemaMovie> findCurrentlyShowing();
     
     @Query("SELECT m FROM CinemaMovie m WHERE m.status = 'UPCOMING' ORDER BY m.upcomingReleaseDate ASC")
-    List<CinemaMovie> findUpcoming(LocalDate currentDate);
+    List<CinemaMovie> findUpcoming();
+
+    @Query("SELECT m FROM CinemaMovie m WHERE m.status = 'ARCHIVED'")
+    List<CinemaMovie> findArchivedMovies();
+
+    @Query("SELECT m FROM CinemaMovie m WHERE m.releaseDate <= :currentDate")
+    List<CinemaMovie> findMoviesByReleaseDateBefore(LocalDate currentDate);
+    
+    @Query("SELECT m FROM CinemaMovie m WHERE m.upcomingReleaseDate <= :currentDate")
+    List<CinemaMovie> findMoviesByUpcomingReleaseDateBefore(LocalDate currentDate);
     
     boolean existsByTmdbId(Long tmdbId);
     

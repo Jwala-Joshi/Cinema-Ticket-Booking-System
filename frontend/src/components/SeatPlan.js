@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import BuyTickets from '../API/BuyTickets';
 import getSeatPlan from '../API/GetSeatPlan';
 import updateSeatsInHall from '../API/UpdateSeatsInHall';
-import generateRandomOccupiedSeats from '../utils/GenerateRandomOccupiedSeats';
 import SeatSelector from './SeatSelector';
 import SeatShowcase from './SeatShowcase';
 
@@ -15,7 +14,7 @@ const movies = [
   },
 ];
 
-function SeatPlan({ movie, movieSession }) {
+function SeatPlan({ movie, movieSession, onOccupiedSeatsChange }) {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [successPopupVisible, setSuccessPopupVisible] = useState(false);
@@ -39,9 +38,16 @@ function SeatPlan({ movie, movieSession }) {
           };
           const data = await getSeatPlan(movieSession.movieDbId, sessionData);
           setSeatPlan(data);
+          
+          if (onOccupiedSeatsChange) {
+            onOccupiedSeatsChange(data?.length || 0);
+          }
         }
       } catch (error) {
         console.error('Error fetching seat plan:', error);
+        if (onOccupiedSeatsChange) {
+          onOccupiedSeatsChange(0);
+        }
       } finally {
         setLoading(false);
       }
@@ -52,7 +58,7 @@ function SeatPlan({ movie, movieSession }) {
     } else {
       setLoading(false);
     }
-  }, [movie.id, movieSession]);
+  }, [movie.id, movieSession, onOccupiedSeatsChange]);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -63,6 +69,7 @@ function SeatPlan({ movie, movieSession }) {
   }, []);
 
   const occupiedSeats = seatPlan || [];
+
   const availableSeats = [27, 28, 29, 30, 35, 36, 37, 38, 43, 44, 45, 46];
 
   const filteredAvailableSeats = availableSeats.filter(
@@ -80,11 +87,6 @@ function SeatPlan({ movie, movieSession }) {
     }
     setRecommendedSeat(recommended);
   }, [filteredAvailableSeats, occupiedSeats]);
-
-  let selectedSeatText = '';
-  if (selectedSeats.length > 0) {
-    selectedSeatText = selectedSeats.map((seat) => seat + 1).join(', ');
-  }
 
   let totalPrice = selectedSeats.length * movies[0].price;
 
@@ -205,14 +207,14 @@ function SeatPlan({ movie, movieSession }) {
         <SeatShowcase />
       </div>
 
-      <div className='bg-black/40 rounded-xl p-6 mb-6 border border-red-900/20'>
+      <div className='bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 mb-6 border border-red-900/30'>
         <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
           <div className='flex-1'>
-            <p className='text-gray-300 mb-2'>
+            <p className='text-gray-200 mb-2'>
               <span className='text-white font-semibold text-lg'>
                 {selectedSeats.length}
               </span>{' '}
-              <span className='text-gray-400'>
+              <span className='text-gray-300'>
                 seat{selectedSeats.length !== 1 ? 's' : ''} selected
               </span>
             </p>
@@ -232,9 +234,9 @@ function SeatPlan({ movie, movieSession }) {
           </div>
 
           {selectedSeats.length > 0 && (
-            <div className='text-right'>
-              <p className='text-gray-400 text-sm mb-1'>Total Price</p>
-              <p className='text-3xl font-bold text-red-600'>
+            <div className='text-right bg-gray-900/50 rounded-lg p-4 border border-red-700/30'>
+              <p className='text-gray-300 text-sm mb-1'>Total Price</p>
+              <p className='text-3xl font-bold text-red-500'>
                 Rs {totalPrice}
               </p>
             </div>
@@ -279,10 +281,10 @@ function SeatPlan({ movie, movieSession }) {
           </button>
         ) : (
           <div className='text-center py-4'>
-            <p className='text-gray-400 text-lg mb-2'>
+            <p className='text-gray-300 text-lg mb-2'>
               👆 Please select at least one seat to continue
             </p>
-            <p className='text-gray-500 text-sm'>
+            <p className='text-gray-400 text-sm'>
               Click on any available seat above
             </p>
           </div>

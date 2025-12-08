@@ -24,6 +24,10 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
   const [selectedSession, setSelectedSession] = useState(null);
   const [availableSessions, setAvailableSessions] = useState([]);
   const [upcomingReleaseDate, setUpcomingReleaseDate] = useState(null);
+  const [occupiedSeatsCount, setOccupiedSeatsCount] = useState(0);
+  const [sessionOccupiedSeats, setSessionOccupiedSeats] = useState({});
+
+  const TOTAL_SEATS = 64;
 
   const API_KEY = process.env.REACT_APP_API_KEY || '';
 
@@ -498,7 +502,6 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
             </div>
           </div>
 
-          {/* Session Selection Section - Only for NOW_SHOWING movies */}
           {passedSource === 'NOW_SHOWING' && !selectedSession && (
             <div className='mb-12'>
               <div className='bg-gray-900/80 backdrop-blur-sm rounded-2xl border-2 border-red-900/50 shadow-2xl p-8'>
@@ -514,41 +517,45 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
                   </div>
                 ) : (
                   <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                    {availableSessions.map((session) => (
-                      <button
-                        key={session.id}
-                        onClick={() => handleSessionSelect(session)}
-                        className='p-6 bg-gray-800 hover:bg-gray-750 rounded-xl border-2 border-gray-700 hover:border-red-500 transition-all duration-300 text-left group'
-                      >
-                        <div className='flex justify-between items-start mb-4'>
-                          <div>
-                            <p className='text-white font-bold text-lg mb-1'>
-                              📅 {FormatDate(session.date)}
-                            </p>
-                            <p className='text-red-400 font-semibold text-xl'>
-                              🕐 {session.time}
-                            </p>
+                    {availableSessions.map((session) => {
+                      const occupiedCount = sessionOccupiedSeats[session.id] || 0;
+                      const availableCount = TOTAL_SEATS - occupiedCount;
+                      
+                      return (
+                        <button
+                          key={session.id}
+                          onClick={() => handleSessionSelect(session)}
+                          className='p-6 bg-gray-800 hover:bg-gray-750 rounded-xl border-2 border-gray-700 hover:border-red-500 transition-all duration-300 text-left group'
+                        >
+                          <div className='flex justify-between items-start mb-4'>
+                            <div>
+                              <p className='text-white font-bold text-lg mb-1'>
+                                📅 {FormatDate(session.date)}
+                              </p>
+                              <p className='text-red-400 font-semibold text-xl'>
+                                🕐 {session.time}
+                              </p>
+                            </div>
+                            <div className={`${availableCount > 20 ? 'bg-green-600' : availableCount > 10 ? 'bg-yellow-600' : 'bg-red-600'} text-white px-3 py-1 rounded-full text-sm font-semibold`}>
+                              {availableCount} seats
+                            </div>
                           </div>
-                          <div className='bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold'>
-                            {session.availableSeats} seats
+                          
+                          <div className='flex items-center justify-between mt-4 pt-4 border-t border-gray-700'>
+                            <span className='text-gray-400 text-sm'>Click to book</span>
+                            <span className='text-red-500 text-xl group-hover:translate-x-1 transition-transform'>
+                              →
+                            </span>
                           </div>
-                        </div>
-                        
-                        <div className='flex items-center justify-between mt-4 pt-4 border-t border-gray-700'>
-                          <span className='text-gray-400 text-sm'>Click to book</span>
-                          <span className='text-red-500 text-xl group-hover:translate-x-1 transition-transform'>
-                            →
-                          </span>
-                        </div>
-                      </button>
-                    ))}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
             </div>
           )}
 
-          {/* Upcoming Release Date Section - Only for UPCOMING movies */}
           {passedSource === 'UPCOMING' && upcomingReleaseDate && (
             <div className='mb-12'>
               <div className='bg-gradient-to-br from-blue-900/80 to-purple-900/80 backdrop-blur-sm rounded-2xl border-2 border-blue-500/50 shadow-2xl p-8'>
@@ -577,7 +584,6 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
             </div>
           )}
 
-          {/* Seat Plan Section - Only shown after session selection */}
           {passedSource === 'NOW_SHOWING' && selectedSession && (
             <div id='seat-plan-section' className='mb-12'>
               <div className='bg-gray-900/80 backdrop-blur-sm rounded-2xl border-2 border-red-900/50 shadow-2xl p-8'>
@@ -606,7 +612,7 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
                       <span className='text-red-400 font-semibold'>Time:</span> {selectedSession.time}
                     </p>
                     <p className='text-gray-300'>
-                      <span className='text-red-400 font-semibold'>Available:</span> {selectedSession.availableSeats} seats
+                      <span className='text-red-400 font-semibold'>Available:</span> {TOTAL_SEATS - occupiedSeatsCount} seats
                     </p>
                   </div>
                 </div>
@@ -614,6 +620,7 @@ const MovieDetails = ({ source = 'UPCOMING' }) => {
                 <SeatPlan 
                   movie={movie} 
                   movieSession={selectedSession}
+                  onOccupiedSeatsChange={setOccupiedSeatsCount}
                 />
               </div>
             </div>

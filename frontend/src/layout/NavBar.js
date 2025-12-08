@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
 import RegistrationForm from '../components/RegistrationForm';
-import Search from '../components/Search';
 import { logout } from '../utils/Auth';
 
 function NavBar({ user, onSearch, onLogin, onLogout }) {
@@ -88,10 +87,6 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
               >
                 🎬 CINEMA
               </a>
-            </div>
-
-            <div className='hidden lg:flex flex-1 max-w-xl mx-8'>
-              <Search onSearch={onSearch} />
             </div>
 
             <div className='hidden lg:flex items-center gap-3'>
@@ -200,10 +195,6 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
 
           {isMobileMenuOpen && (
             <div className='lg:hidden pb-4 space-y-4 animate-fadeIn'>
-              <div className='w-full'>
-                <Search onSearch={onSearch} />
-              </div>
-
               <div className='flex flex-col gap-2'>
                 {user ? (
                   <>
