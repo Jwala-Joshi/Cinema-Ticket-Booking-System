@@ -1,12 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import MovieSessions from '../mockData/MovieSessions';
 import FormatDate from '../utils/formatDate';
-import RecommendedSessionInfo from './RecommendedSessionInfo';
 
 const RecommendedMovieCard = ({ movie, hallNumber }) => {
   const navigate = useNavigate();
-  const movieSessions = MovieSessions(movie, hallNumber);
 
   const handleClick = () => {
     navigate(`/movie/${movie.id}`);
@@ -53,10 +50,7 @@ const RecommendedMovieCard = ({ movie, hallNumber }) => {
             {FormatDate(movie.release_date)}
           </p>
         )}
-
-        {/* <div className='text-xs'>
-          <RecommendedSessionInfo movieSessions={movieSessions} movieId={movie.id} />
-        </div> */}
+        
       </div>
     </div>
   );

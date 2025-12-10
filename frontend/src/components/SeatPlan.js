@@ -106,7 +106,7 @@ function SeatPlan({ movie, movieSession, onOccupiedSeatsChange }) {
       const order = {
         customerId: userId || Math.floor(Math.random() * 1000000),
         userName: userName || 'Guest',
-        orderDate: new Date().toISOString(),
+        orderDate: movieSession.dateTime,
         seats: [...orderSeats, ...occupiedSeats],
         seat: orderSeats,
         movie: {

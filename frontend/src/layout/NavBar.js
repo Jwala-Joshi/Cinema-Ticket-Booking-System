@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
 import RegistrationForm from '../components/RegistrationForm';
+import Search from '../components/Search';
 import { logout } from '../utils/Auth';
 
 function NavBar({ user, onSearch, onLogin, onLogout }) {
@@ -87,6 +88,10 @@ function NavBar({ user, onSearch, onLogin, onLogout }) {
               >
                 🎬 CINEMA
               </a>
+            </div>
+
+            <div className='hidden lg:flex flex-1 max-w-xl mx-8'>
+              <Search onSearch={onSearch} />
             </div>
 
             <div className='hidden lg:flex items-center gap-3'>

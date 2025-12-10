@@ -135,6 +135,9 @@ public class Order {
     public void setSeat(List<Integer> seat) {
         this.seat = seat;
     }
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
     @PrePersist
     protected void onCreate() {

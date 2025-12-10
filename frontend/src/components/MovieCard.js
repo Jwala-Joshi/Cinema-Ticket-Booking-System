@@ -1,12 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isLoggedIn } from '../utils/Auth';
 
 const MovieCard = ({ movie, source, showStatus = false }) => {
   const navigate = useNavigate();
+  const userLoggedIn = isLoggedIn();
 
   const handleClick = () => {
     if (movie.isCinemaMovie) {
-      navigate(`/movie/${movie.id}`,{ state: { source } });
+      const effectiveSource = (source === 'NOW_SHOWING' && !userLoggedIn) ? 'UPCOMING' : source;
+      navigate(`/movie/${movie.id}`, { state: { source: effectiveSource } });
     } else {
       navigate(`/movie/${movie.id}`, { state: { fromAddMovie: true } });
     }
@@ -16,6 +19,13 @@ const MovieCard = ({ movie, source, showStatus = false }) => {
     if (!dateString) return null;
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const getButtonText = () => {
+    if (!movie.isCinemaMovie) return 'See Details';
+    if (movie.status === 'UPCOMING') return 'See Details';
+    if (movie.status === 'NOW_SHOWING' && !userLoggedIn) return 'Login to Book';
+    return 'Book Now';
   };
 
   return (
@@ -34,7 +44,7 @@ const MovieCard = ({ movie, source, showStatus = false }) => {
               className='w-full px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full font-semibold text-sm hover:from-red-500 hover:to-red-600 transition-all duration-300 transform hover:scale-105'
               onClick={handleClick} 
             >
-              {movie.isCinemaMovie ? movie.status === 'UPCOMING'?'See Details':'Book Now' : 'See Details'}
+              {getButtonText()}
             </button>
           </div>
         </div>

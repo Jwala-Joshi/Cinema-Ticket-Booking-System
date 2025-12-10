@@ -86,6 +86,7 @@ const RecommendedMovies = () => {
             .sort((a, b) => genreFrequency[b] - genreFrequency[a]);
 
           const recommendedGenreIds = sortedGenres
+            .slice(0,4)
             .map(g => genres[g])
             .filter(Boolean);
 

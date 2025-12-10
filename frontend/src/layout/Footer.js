@@ -17,10 +17,10 @@ export default function Footer() {
               <p className='text-sm leading-relaxed mb-4'>
                 Your premier destination for booking movie tickets online. Experience the magic of cinema with seamless booking and the best seat selection.
               </p>
-              <div className='flex gap-3'>
+              <div className='flex justify-center gap-3 items-center'>
                 {['📘','🐦','📷'].map((icon, idx) => (
                   <a
-                    href='#'
+                    href='/'
                     key={idx}
                     className='w-10 h-10 rounded-full bg-white/5 hover:bg-red-600 flex items-center justify-center transition-all duration-300 hover:scale-110'
                   >
